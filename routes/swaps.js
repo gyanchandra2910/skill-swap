@@ -433,4 +433,186 @@ router.delete('/:id', authenticate, async (req, res) => {
   }
 });
 
+// @route   PUT /api/swaps/:id/complete
+// @desc    Mark swap session as completed by user
+// @access  Private
+router.put('/:id/complete', authenticate, async (req, res) => {
+  try {
+    const { sessionSummary, sessionTime } = req.body;
+    const swapId = req.params.id;
+    const userId = req.user._id.toString();
+
+    // Find the swap request
+    const swapRequest = await SwapRequest.findById(swapId)
+      .populate('requesterId', 'name email')
+      .populate('receiverId', 'name email');
+
+    if (!swapRequest) {
+      return res.status(404).json({
+        success: false,
+        message: 'Swap request not found'
+      });
+    }
+
+    // Check if user is part of this swap
+    const isRequester = swapRequest.requesterId._id.toString() === userId;
+    const isReceiver = swapRequest.receiverId._id.toString() === userId;
+
+    if (!isRequester && !isReceiver) {
+      return res.status(403).json({
+        success: false,
+        message: 'You are not authorized to complete this swap'
+      });
+    }
+
+    // Check if swap is accepted
+    if (swapRequest.status !== 'accepted') {
+      return res.status(400).json({
+        success: false,
+        message: 'Can only complete accepted swap requests'
+      });
+    }
+
+    // Update completion status based on who is marking it complete
+    if (isRequester) {
+      swapRequest.requesterCompleted = true;
+    } else {
+      swapRequest.receiverCompleted = true;
+    }
+
+    // Add session details if provided
+    if (sessionSummary) {
+      swapRequest.sessionSummary = sessionSummary;
+    }
+    if (sessionTime) {
+      swapRequest.sessionTime = new Date(sessionTime);
+    }
+
+    // If both users have marked as completed, set status to completed
+    if (swapRequest.requesterCompleted && swapRequest.receiverCompleted) {
+      swapRequest.status = 'completed';
+      swapRequest.completedAt = new Date();
+    }
+
+    await swapRequest.save();
+
+    // Emit real-time notification to other user
+    const otherUserId = isRequester ? swapRequest.receiverId._id : swapRequest.requesterId._id;
+    const currentUserName = isRequester ? swapRequest.requesterId.name : swapRequest.receiverId.name;
+
+    if (req.io) {
+      if (swapRequest.status === 'completed') {
+        // Both completed - notify completion
+        req.io.to(otherUserId.toString()).emit('swap_completed', {
+          swapId: swapRequest._id,
+          message: `🎉 Swap session with ${currentUserName} has been completed by both parties!`,
+          swap: swapRequest
+        });
+      } else {
+        // One user completed - notify waiting for other
+        req.io.to(otherUserId.toString()).emit('swap_progress', {
+          swapId: swapRequest._id,
+          message: `${currentUserName} has marked the swap session as completed. Please confirm when you're ready.`,
+          swap: swapRequest
+        });
+      }
+    }
+
+    res.json({
+      success: true,
+      message: swapRequest.status === 'completed' 
+        ? 'Swap session completed successfully!' 
+        : 'Your completion has been recorded. Waiting for the other user to confirm.',
+      swap: swapRequest
+    });
+
+  } catch (error) {
+    console.error('Complete swap error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while completing swap'
+    });
+  }
+});
+
+// @route   PUT /api/swaps/:id/schedule
+// @desc    Suggest/update session time for accepted swap
+// @access  Private
+router.put('/:id/schedule', authenticate, async (req, res) => {
+  try {
+    const { sessionTime, contactEmail, contactPhone } = req.body;
+    const swapId = req.params.id;
+    const userId = req.user._id.toString();
+
+    // Find the swap request
+    const swapRequest = await SwapRequest.findById(swapId)
+      .populate('requesterId', 'name email')
+      .populate('receiverId', 'name email');
+
+    if (!swapRequest) {
+      return res.status(404).json({
+        success: false,
+        message: 'Swap request not found'
+      });
+    }
+
+    // Check if user is part of this swap
+    const isRequester = swapRequest.requesterId._id.toString() === userId;
+    const isReceiver = swapRequest.receiverId._id.toString() === userId;
+
+    if (!isRequester && !isReceiver) {
+      return res.status(403).json({
+        success: false,
+        message: 'You are not authorized to schedule this swap'
+      });
+    }
+
+    // Check if swap is accepted
+    if (swapRequest.status !== 'accepted') {
+      return res.status(400).json({
+        success: false,
+        message: 'Can only schedule accepted swap requests'
+      });
+    }
+
+    // Update session details
+    if (sessionTime) {
+      swapRequest.sessionTime = new Date(sessionTime);
+    }
+    if (contactEmail) {
+      swapRequest.contactEmail = contactEmail;
+    }
+    if (contactPhone) {
+      swapRequest.contactPhone = contactPhone;
+    }
+
+    await swapRequest.save();
+
+    // Emit real-time notification to other user
+    const otherUserId = isRequester ? swapRequest.receiverId._id : swapRequest.requesterId._id;
+    const currentUserName = isRequester ? swapRequest.requesterId.name : swapRequest.receiverId.name;
+
+    if (req.io && sessionTime) {
+      req.io.to(otherUserId.toString()).emit('swap_scheduled', {
+        swapId: swapRequest._id,
+        message: `📅 ${currentUserName} has suggested a session time: ${new Date(sessionTime).toLocaleString()}`,
+        swap: swapRequest
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Session details updated successfully',
+      swap: swapRequest
+    });
+
+  } catch (error) {
+    console.error('Schedule swap error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while scheduling swap'
+    });
+  }
+});
+
 module.exports = router;

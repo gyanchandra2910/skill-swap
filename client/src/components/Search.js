@@ -102,13 +102,20 @@ const Search = () => {
   };
 
   return (
-    <div className="container">
-      {/* Search Header */}
-      <div className="row mb-4">
-        <div className="col-12">
-          <div className="bg-primary text-white p-4 rounded">
-            <h2 className="mb-1">Find Skills & Connect</h2>
-            <p className="mb-0">Search for people who can teach you new skills or want to learn from you</p>
+    <div>
+      {/* Hero Section */}
+      <div className="bg-gradient-primary text-white py-4 mb-4 rounded-3">
+        <div className="container py-3">
+          <div className="row align-items-center">
+            <div className="col-lg-8 mx-auto text-center">
+              <h1 className="display-5 fw-bold mb-3">
+                <i className="bi bi-search me-2"></i>
+                Discover Skills & Teachers
+              </h1>
+              <p className="lead mb-0">
+                Find passionate teachers and learn new skills from our vibrant community
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -130,23 +137,24 @@ const Search = () => {
             </div>
           )}
           
-          <div className="card shadow">
-            <div className="card-header bg-light">
-              <h5 className="mb-0">
-                <i className="bi bi-search me-2"></i>
-                Search Users
-              </h5>
+          <div className="card border-0 shadow-lg">
+            <div className="card-header bg-white border-0 pt-4">
+              <h4 className="text-center mb-0">
+                <i className="bi bi-funnel me-2 text-primary"></i>
+                Search Filters
+              </h4>
             </div>
-            <div className="card-body">
+            <div className="card-body p-4">
               <form onSubmit={handleSearch}>
-                <div className="row">
-                  <div className="col-md-6 mb-3">
-                    <label htmlFor="searchTerm" className="form-label">
+                <div className="row g-3">
+                  <div className="col-md-4">
+                    <label htmlFor="searchTerm" className="form-label fw-semibold">
+                      <i className="bi bi-lightbulb me-1 text-warning"></i>
                       Skill Keyword <span className="text-danger">*</span>
                     </label>
                     <input
                       type="text"
-                      className="form-control"
+                      className="form-control form-control-lg"
                       id="searchTerm"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
@@ -155,31 +163,33 @@ const Search = () => {
                     />
                   </div>
                   
-                  <div className="col-md-3 mb-3">
-                    <label htmlFor="location" className="form-label">
+                  <div className="col-md-4">
+                    <label htmlFor="location" className="form-label fw-semibold">
+                      <i className="bi bi-geo-alt me-1 text-danger"></i>
                       Location (Optional)
                     </label>
                     <input
                       type="text"
-                      className="form-control"
+                      className="form-control form-control-lg"
                       id="location"
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
-                      placeholder="City, State"
+                      placeholder="e.g., New York, Remote..."
                     />
                   </div>
                   
-                  <div className="col-md-3 mb-3">
-                    <label htmlFor="availability" className="form-label">
-                      Availability (Optional)
+                  <div className="col-md-4">
+                    <label htmlFor="availability" className="form-label fw-semibold">
+                      <i className="bi bi-clock me-1 text-info"></i>
+                      Availability
                     </label>
                     <select
-                      className="form-select"
+                      className="form-select form-select-lg"
                       id="availability"
                       value={availability}
                       onChange={(e) => setAvailability(e.target.value)}
                     >
-                      <option value="">Any</option>
+                      <option value="">Any availability</option>
                       <option value="available">Available</option>
                       <option value="busy">Busy</option>
                       <option value="unavailable">Unavailable</option>
@@ -187,33 +197,35 @@ const Search = () => {
                   </div>
                 </div>
                 
-                <div className="d-flex gap-2">
-                  <button
-                    type="submit"
-                    className="btn btn-primary"
-                    disabled={loading}
-                  >
-                    {loading ? (
-                      <>
-                        <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                        Searching...
-                      </>
-                    ) : (
-                      <>
-                        <i className="bi bi-search me-1"></i>
-                        Search
-                      </>
-                    )}
-                  </button>
-                  
-                  <button
-                    type="button"
-                    className="btn btn-outline-secondary"
-                    onClick={clearSearch}
-                  >
-                    <i className="bi bi-x-circle me-1"></i>
-                    Clear
-                  </button>
+                <div className="row mt-4">
+                  <div className="col-12 text-center">
+                    <button
+                      type="submit"
+                      className="btn btn-primary btn-lg px-5 py-3"
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          Searching...
+                        </>
+                      ) : (
+                        <>
+                          <i className="bi bi-search me-2"></i>
+                          Search Teachers
+                        </>
+                      )}
+                    </button>
+                    
+                    <button
+                      type="button"
+                      className="btn btn-outline-secondary btn-lg ms-3 px-4 py-3"
+                      onClick={clearSearch}
+                    >
+                      <i className="bi bi-x-circle me-2"></i>
+                      Clear
+                    </button>
+                  </div>
                 </div>
               </form>
             </div>

@@ -30,7 +30,7 @@ const swapRequestSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'accepted', 'rejected'],
+    enum: ['pending', 'accepted', 'rejected', 'completed'],
     default: 'pending'
   },
   acceptedAt: {
@@ -38,6 +38,33 @@ const swapRequestSchema = new mongoose.Schema({
   },
   rejectedAt: {
     type: Date
+  },
+  completedAt: {
+    type: Date
+  },
+  requesterCompleted: {
+    type: Boolean,
+    default: false
+  },
+  receiverCompleted: {
+    type: Boolean,
+    default: false
+  },
+  sessionSummary: {
+    type: String,
+    trim: true,
+    maxlength: [1000, 'Session summary cannot exceed 1000 characters']
+  },
+  sessionTime: {
+    type: Date
+  },
+  contactEmail: {
+    type: String,
+    trim: true
+  },
+  contactPhone: {
+    type: String,
+    trim: true
   }
 }, {
   timestamps: true

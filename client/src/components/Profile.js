@@ -149,25 +149,49 @@ const Profile = () => {
   }
 
   return (
-    <div className="row justify-content-center">
-      <div className="col-md-10">
-        <div className="card shadow">
-          <div className="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h4 className="mb-0">Edit Your Profile</h4>
-            <Link to="/dashboard" className="btn btn-outline-light btn-sm">
-              Back to Dashboard
-            </Link>
+    <div>
+      {/* Hero Section */}
+      <div className="bg-gradient-primary text-white py-4 mb-4 rounded-3">
+        <div className="container py-3">
+          <div className="row align-items-center">
+            <div className="col-lg-8 mx-auto text-center">
+              <h1 className="display-5 fw-bold mb-3">
+                <i className="bi bi-person-gear me-2"></i>
+                Edit Your Profile
+              </h1>
+              <p className="lead mb-0">
+                Update your information and skills to connect with the right people
+              </p>
+            </div>
           </div>
-          <div className="card-body">
-            {message && (
-              <div className="alert alert-success alert-dismissible fade show" role="alert">
-                {message}
-                <button type="button" className="btn-close" onClick={() => setMessage('')}></button>
-              </div>
-            )}
-            
-            {error && (
-              <div className="alert alert-danger alert-dismissible fade show" role="alert">
+        </div>
+      </div>
+
+      <div className="row justify-content-center">
+        <div className="col-md-10">
+          <div className="card border-0 shadow-lg">
+            <div className="card-header bg-white border-0 pt-4 d-flex justify-content-between align-items-center">
+              <h4 className="mb-0 text-primary">
+                <i className="bi bi-person-circle me-2"></i>
+                Profile Settings
+              </h4>
+              <Link to="/dashboard" className="btn btn-outline-primary">
+                <i className="bi bi-arrow-left me-1"></i>
+                Back to Dashboard
+              </Link>
+            </div>
+            <div className="card-body p-4">
+              {message && (
+                <div className="alert alert-success alert-dismissible fade show" role="alert">
+                  <i className="bi bi-check-circle me-2"></i>
+                  {message}
+                  <button type="button" className="btn-close" onClick={() => setMessage('')}></button>
+                </div>
+              )}
+              
+              {error && (
+                <div className="alert alert-danger alert-dismissible fade show" role="alert">
+                  <i className="bi bi-exclamation-triangle me-2"></i>
                 {error}
                 <button type="button" className="btn-close" onClick={() => setError('')}></button>
               </div>
@@ -450,7 +474,7 @@ const Profile = () => {
                     }
                   </small>
                 </div>
-              </div>
+              </div>              </div>
             </div>
           </div>
         </div>

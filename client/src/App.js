@@ -8,6 +8,7 @@ import './App.css';
 import Home from './components/Home';
 import About from './components/About';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import Login from './components/Login';
 import Register from './components/Register';
 import Search from './components/Search';
@@ -19,9 +20,9 @@ function App() {
   return (
     <SocketProvider>
       <Router>
-        <div className="App">
+        <div className="App d-flex flex-column min-vh-100">
           <Navbar />
-          <div className="container mt-4">
+          <main className="container mt-4 flex-grow-1">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/about" element={<About />} />
@@ -32,7 +33,9 @@ function App() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/admin" element={<AdminDashboard />} />
             </Routes>
-          </div>
+          </main>
+          
+          <Footer />
           
           {/* Toast Container for notifications */}
           <ToastContainer
