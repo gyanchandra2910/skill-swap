@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { useSocket } from '../context/SocketContext';
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
@@ -11,6 +12,7 @@ const Dashboard = () => {
   });
   const [notification, setNotification] = useState('');
   const [requestsLoading, setRequestsLoading] = useState(false);
+  const { socket, connected } = useSocket();
 
   useEffect(() => {
     // Get user data from localStorage
@@ -21,6 +23,23 @@ const Dashboard = () => {
     }
     setLoading(false);
   }, []);
+
+  // Listen for socket events to refresh dashboard
+  useEffect(() => {
+    if (socket && connected) {
+      const handleSwapEvent = (data) => {
+        console.log('Dashboard received swap event:', data);
+        // Refresh swap requests when any swap-related event occurs
+        fetchSwapRequests();
+      };
+
+      socket.on('swap_request', handleSwapEvent);
+
+      return () => {
+        socket.off('swap_request', handleSwapEvent);
+      };
+    }
+  }, [socket, connected]);
 
   const fetchSwapRequests = async () => {
     setRequestsLoading(true);
@@ -123,6 +142,18 @@ const Dashboard = () => {
           </div>
         </div>
       )}
+
+      {/* Real-time Connection Status */}
+      <div className="row mb-2">
+        <div className="col-12">
+          <div className="d-flex justify-content-end">
+            <small className={`badge ${connected ? 'bg-success' : 'bg-secondary'}`}>
+              <i className={`bi ${connected ? 'bi-wifi' : 'bi-wifi-off'} me-1`}></i>
+              {connected ? 'Real-time notifications ON' : 'Offline'}
+            </small>
+          </div>
+        </div>
+      </div>
 
       {/* Welcome Header */}
       <div className="row mb-4">

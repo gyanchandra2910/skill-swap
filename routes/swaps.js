@@ -79,6 +79,21 @@ router.post('/', authenticate, async (req, res) => {
     // Populate user details for response
     await swapRequest.populateUsers();
 
+    // Emit socket event to receiver for real-time notification
+    if (req.io) {
+      req.io.to(receiverId).emit('swap_request', {
+        type: 'new_request',
+        data: {
+          id: swapRequest._id,
+          from: swapRequest.requesterId.name,
+          skillOffered: swapRequest.skillOffered,
+          skillWanted: swapRequest.skillWanted,
+          message: swapRequest.message,
+          createdAt: swapRequest.createdAt
+        }
+      });
+    }
+
     res.status(201).json({
       success: true,
       message: 'Swap request sent successfully',
@@ -149,6 +164,20 @@ router.put('/:id/accept', authenticate, async (req, res) => {
     // Populate user details for response
     await swapRequest.populateUsers();
 
+    // Emit socket event to requester for real-time notification
+    if (req.io) {
+      req.io.to(swapRequest.requesterId._id.toString()).emit('swap_request', {
+        type: 'request_accepted',
+        data: {
+          id: swapRequest._id,
+          acceptedBy: swapRequest.receiverId.name,
+          skillOffered: swapRequest.skillOffered,
+          skillWanted: swapRequest.skillWanted,
+          acceptedAt: swapRequest.acceptedAt
+        }
+      });
+    }
+
     res.json({
       success: true,
       message: 'Swap request accepted',
@@ -206,6 +235,21 @@ router.put('/:id/reject', authenticate, async (req, res) => {
 
     // Populate user details for response
     await swapRequest.populateUsers();
+
+    // Emit socket event to requester for real-time notification
+    if (req.io) {
+      req.io.to(swapRequest.requesterId._id.toString()).emit('swap_request', {
+        type: 'request_rejected',
+        data: {
+          id: swapRequest._id,
+          rejectedBy: swapRequest.receiverId.name,
+          skillOffered: swapRequest.skillOffered,
+          skillWanted: swapRequest.skillWanted,
+          reason: reason || 'No reason provided',
+          rejectedAt: swapRequest.rejectedAt
+        }
+      });
+    }
 
     res.json({
       success: true,

@@ -1,6 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const http = require('http');
+const socketIo = require('socket.io');
 require('dotenv').config();
 
 // Import routes
@@ -9,11 +11,39 @@ const userRoutes = require('./routes/users');
 const swapRoutes = require('./routes/swaps');
 
 const app = express();
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"]
+  }
+});
 const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Make io instance available to routes
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
+
+// Socket.io connection handling
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
+
+  // Join user to their own room for private notifications
+  socket.on('join', (userId) => {
+    socket.join(userId);
+    console.log(`User ${userId} joined room ${userId}`);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
+});
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
@@ -62,6 +92,6 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
