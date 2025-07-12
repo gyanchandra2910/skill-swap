@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
   return (
@@ -15,9 +16,14 @@ const Home = () => {
             Start your skill-sharing journey today. Find mentors, become a teacher, 
             or simply connect with like-minded individuals.
           </p>
-          <button className="btn btn-primary btn-lg">
-            Get Started
-          </button>
+          <div className="d-flex gap-2">
+            <Link to="/register" className="btn btn-primary btn-lg">
+              Get Started
+            </Link>
+            <Link to="/login" className="btn btn-outline-primary btn-lg">
+              Login
+            </Link>
+          </div>
         </div>
       </div>
       
@@ -30,9 +36,9 @@ const Home = () => {
                 <p className="card-text">
                   Discover new skills from experienced professionals and passionate enthusiasts.
                 </p>
-                <button className="btn btn-outline-primary">
+                <Link to="/register" className="btn btn-outline-primary">
                   Browse Skills
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -44,9 +50,9 @@ const Home = () => {
                 <p className="card-text">
                   Share your expertise with others and help them grow their skill set.
                 </p>
-                <button className="btn btn-outline-primary">
+                <Link to="/register" className="btn btn-outline-primary">
                   Offer Skills
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -58,9 +64,9 @@ const Home = () => {
                 <p className="card-text">
                   Build meaningful connections with people who share your interests.
                 </p>
-                <button className="btn btn-outline-primary">
+                <Link to="/register" className="btn btn-outline-primary">
                   Join Community
-                </button>
+                </Link>
               </div>
             </div>
           </div>
