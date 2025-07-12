@@ -23,6 +23,9 @@ const Home = () => {
             <Link to="/login" className="btn btn-outline-primary btn-lg">
               Login
             </Link>
+            <Link to="/search" className="btn btn-outline-secondary btn-lg">
+              Browse Skills
+            </Link>
           </div>
         </div>
       </div>
@@ -36,7 +39,7 @@ const Home = () => {
                 <p className="card-text">
                   Discover new skills from experienced professionals and passionate enthusiasts.
                 </p>
-                <Link to="/register" className="btn btn-outline-primary">
+                <Link to="/search" className="btn btn-outline-primary">
                   Browse Skills
                 </Link>
               </div>

@@ -50,6 +50,11 @@ const Navbar = () => {
                 About
               </Link>
             </li>
+            <li className="nav-item">
+              <Link className="nav-link" to="/search">
+                Search Skills
+              </Link>
+            </li>
             {isLoggedIn && (
               <li className="nav-item">
                 <Link className="nav-link" to="/dashboard">
