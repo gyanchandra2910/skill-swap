@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useSocket } from '../context/SocketContext';
 import FeedbackForm from './FeedbackForm';
-import FeedbackDisplay from './FeedbackDisplay';
+import ScheduleModal from './ScheduleModal';
+import CompletionModal from './CompletionModal';
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
@@ -17,6 +18,8 @@ const Dashboard = () => {
   const { socket, connected } = useSocket();
   const [showFeedbackForm, setShowFeedbackForm] = useState(null);
   const [feedbackData, setFeedbackData] = useState({});
+  const [showScheduleModal, setShowScheduleModal] = useState(null);
+  const [showCompletionModal, setShowCompletionModal] = useState(null);
 
   useEffect(() => {
     // Get user data from localStorage
@@ -112,6 +115,82 @@ const Dashboard = () => {
 
   const handleFeedbackCancel = () => {
     setShowFeedbackForm(null);
+  };
+
+  const handleCompleteSwap = async (requestId, sessionSummary = '') => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await axios.put(
+        `http://localhost:5000/api/swaps/${requestId}/complete`,
+        { sessionSummary },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+
+      if (response.data.success) {
+        setNotification(response.data.message);
+        setTimeout(() => setNotification(''), 5000);
+        fetchSwapRequests(); // Refresh the requests
+      }
+    } catch (error) {
+      console.error('Error completing swap:', error);
+      setNotification('Failed to complete swap. Please try again.');
+      setTimeout(() => setNotification(''), 5000);
+    }
+  };
+
+  const handleScheduleSwap = async (requestId, scheduleData) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await axios.put(
+        `http://localhost:5000/api/swaps/${requestId}/schedule`,
+        scheduleData,
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        }
+      );
+
+      if (response.data.success) {
+        setNotification('Session details updated successfully!');
+        setTimeout(() => setNotification(''), 5000);
+        fetchSwapRequests(); // Refresh the requests
+      }
+    } catch (error) {
+      console.error('Error scheduling swap:', error);
+      setNotification('Failed to update session details. Please try again.');
+      setTimeout(() => setNotification(''), 5000);
+    }
+  };
+
+  const handleShowScheduleModal = (request) => {
+    setShowScheduleModal(request);
+  };
+
+  const handleShowCompletionModal = (request) => {
+    setShowCompletionModal(request);
+  };
+
+  const handleScheduleSubmit = (scheduleData) => {
+    if (showScheduleModal) {
+      handleScheduleSwap(showScheduleModal._id, scheduleData);
+      setShowScheduleModal(null);
+    }
+  };
+
+  const handleCompletionSubmit = (sessionSummary) => {
+    if (showCompletionModal) {
+      handleCompleteSwap(showCompletionModal._id, sessionSummary);
+      setShowCompletionModal(null);
+    }
   };
 
   const getOtherUser = (request) => {
@@ -385,7 +464,9 @@ const Dashboard = () => {
                 </div>
               ) : swapRequests.incoming && swapRequests.incoming.length > 0 ? (
                 <div className="space-y-3">
-                  {swapRequests.incoming.map((request) => (
+                  {swapRequests.incoming.map((request) => {
+                    const otherUser = request.requesterId;
+                    return (
                     <div key={request._id} className="border rounded p-3 mb-3">
                       <div className="d-flex justify-content-between align-items-start mb-2">
                         <div>
@@ -396,7 +477,8 @@ const Dashboard = () => {
                         </div>
                         <span className={`badge ${
                           request.status === 'pending' ? 'bg-warning' :
-                          request.status === 'accepted' ? 'bg-success' : 'bg-danger'
+                          request.status === 'accepted' ? 'bg-success' : 
+                          request.status === 'completed' ? 'bg-info' : 'bg-danger'
                         }`}>
                           {request.status}
                         </span>
@@ -445,19 +527,141 @@ const Dashboard = () => {
                         <div>
                           <div className="text-success small mb-2">
                             <i className="bi bi-check-circle me-1"></i>
-                            Swap completed successfully!
+                            Swap accepted! Ready to connect.
                           </div>
-                          {!feedbackData[request._id] && (
+                          
+                          {/* Contact Information */}
+                          <div className="card border-success mb-3">
+                            <div className="card-header bg-success text-white">
+                              <h6 className="mb-0">
+                                <i className="bi bi-person-lines-fill me-2"></i>
+                                Contact Information
+                              </h6>
+                            </div>
+                            <div className="card-body">
+                              <div className="row">
+                                <div className="col-md-6">
+                                  <strong>Email:</strong>
+                                  <br />
+                                  <a href={`mailto:${otherUser?.email}`} className="text-decoration-none">
+                                    {otherUser?.email}
+                                  </a>
+                                </div>
+                                <div className="col-md-6">
+                                  {otherUser?.phone && (
+                                    <>
+                                      <strong>WhatsApp:</strong>
+                                      <br />
+                                      <a 
+                                        href={`https://wa.me/${otherUser.phone.replace(/\D/g, '')}`} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="text-decoration-none text-success"
+                                      >
+                                        <i className="bi bi-whatsapp me-1"></i>
+                                        {otherUser.phone}
+                                      </a>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                              
+                              {/* Session Time */}
+                              {request.sessionTime && (
+                                <div className="mt-3 p-2 bg-light rounded">
+                                  <strong>Suggested Session Time:</strong>
+                                  <br />
+                                  <i className="bi bi-calendar-event me-1"></i>
+                                  {new Date(request.sessionTime).toLocaleString()}
+                                </div>
+                              )}
+                              
+                              {/* Additional Contact Info */}
+                              {(request.contactEmail || request.contactPhone) && (
+                                <div className="mt-3">
+                                  <strong>Additional Contact:</strong>
+                                  <br />
+                                  {request.contactEmail && (
+                                    <div>
+                                      <i className="bi bi-envelope me-1"></i>
+                                      {request.contactEmail}
+                                    </div>
+                                  )}
+                                  {request.contactPhone && (
+                                    <div>
+                                      <i className="bi bi-telephone me-1"></i>
+                                      {request.contactPhone}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Completion Status */}
+                          <div className="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                              {request.requesterCompleted && (
+                                <span className="badge bg-info me-2">
+                                  <i className="bi bi-person-check me-1"></i>
+                                  Requester completed
+                                </span>
+                              )}
+                              {request.receiverCompleted && (
+                                <span className="badge bg-info me-2">
+                                  <i className="bi bi-person-check me-1"></i>
+                                  Receiver completed
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Session Summary */}
+                          {request.sessionSummary && (
+                            <div className="alert alert-info">
+                              <strong>Session Summary:</strong>
+                              <br />
+                              {request.sessionSummary}
+                            </div>
+                          )}
+
+                          {/* Action Buttons */}
+                          <div className="d-flex gap-2 flex-wrap">
+                            {request.status === 'accepted' && 
+                             ((user._id === request.requesterId?._id && !request.requesterCompleted) ||
+                              (user._id === request.receiverId?._id && !request.receiverCompleted)) && (
+                              <button
+                                className="btn btn-success btn-sm"
+                                onClick={() => handleShowCompletionModal(request)}
+                              >
+                                <i className="bi bi-check-circle me-1"></i>
+                                Mark Session Completed
+                              </button>
+                            )}
+
+                            {!request.sessionTime && (
+                              <button
+                                className="btn btn-outline-primary btn-sm"
+                                onClick={() => handleShowScheduleModal(request)}
+                              >
+                                <i className="bi bi-calendar-plus me-1"></i>
+                                Suggest Time
+                              </button>
+                            )}
+                          </div>
+
+                          {/* Show feedback option for completed swaps */}
+                          {request.status === 'completed' && !feedbackData[request._id] && (
                             <button
-                              className="btn btn-outline-warning btn-sm"
+                              className="btn btn-outline-warning btn-sm mt-2"
                               onClick={() => handleShowFeedbackForm(request)}
                             >
                               <i className="bi bi-star me-1"></i>
                               Rate Experience
                             </button>
                           )}
-                          {feedbackData[request._id] && (
-                            <small className="text-muted">
+                          {request.status === 'completed' && feedbackData[request._id] && (
+                            <small className="text-muted mt-2 d-block">
                               <i className="bi bi-check-circle me-1"></i>
                               Feedback submitted
                             </small>
@@ -472,7 +676,8 @@ const Dashboard = () => {
                         </div>
                       )}
                     </div>
-                  ))}
+                  )
+                  })}
                 </div>
               ) : (
                 <div className="text-center py-4 text-muted">
@@ -505,7 +710,9 @@ const Dashboard = () => {
                 </div>
               ) : swapRequests.outgoing && swapRequests.outgoing.length > 0 ? (
                 <div className="space-y-3">
-                  {swapRequests.outgoing.map((request) => (
+                  {swapRequests.outgoing.map((request) => {
+                    const otherUser = request.receiverId;
+                    return (
                     <div key={request._id} className="border rounded p-3 mb-3">
                       <div className="d-flex justify-content-between align-items-start mb-2">
                         <div>
@@ -516,7 +723,8 @@ const Dashboard = () => {
                         </div>
                         <span className={`badge ${
                           request.status === 'pending' ? 'bg-warning' :
-                          request.status === 'accepted' ? 'bg-success' : 'bg-danger'
+                          request.status === 'accepted' ? 'bg-success' : 
+                          request.status === 'completed' ? 'bg-info' : 'bg-danger'
                         }`}>
                           {request.status}
                         </span>
@@ -555,17 +763,139 @@ const Dashboard = () => {
                             <i className="bi bi-check-circle me-1"></i>
                             Request accepted! You can now connect.
                           </div>
-                          {!feedbackData[request._id] && (
+                          
+                          {/* Contact Information */}
+                          <div className="card border-success mb-3">
+                            <div className="card-header bg-success text-white">
+                              <h6 className="mb-0">
+                                <i className="bi bi-person-lines-fill me-2"></i>
+                                Contact Information
+                              </h6>
+                            </div>
+                            <div className="card-body">
+                              <div className="row">
+                                <div className="col-md-6">
+                                  <strong>Email:</strong>
+                                  <br />
+                                  <a href={`mailto:${otherUser?.email}`} className="text-decoration-none">
+                                    {otherUser?.email}
+                                  </a>
+                                </div>
+                                <div className="col-md-6">
+                                  {otherUser?.phone && (
+                                    <>
+                                      <strong>WhatsApp:</strong>
+                                      <br />
+                                      <a 
+                                        href={`https://wa.me/${otherUser.phone.replace(/\D/g, '')}`} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="text-decoration-none text-success"
+                                      >
+                                        <i className="bi bi-whatsapp me-1"></i>
+                                        {otherUser.phone}
+                                      </a>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                              
+                              {/* Session Time */}
+                              {request.sessionTime && (
+                                <div className="mt-3 p-2 bg-light rounded">
+                                  <strong>Suggested Session Time:</strong>
+                                  <br />
+                                  <i className="bi bi-calendar-event me-1"></i>
+                                  {new Date(request.sessionTime).toLocaleString()}
+                                </div>
+                              )}
+                              
+                              {/* Additional Contact Info */}
+                              {(request.contactEmail || request.contactPhone) && (
+                                <div className="mt-3">
+                                  <strong>Additional Contact:</strong>
+                                  <br />
+                                  {request.contactEmail && (
+                                    <div>
+                                      <i className="bi bi-envelope me-1"></i>
+                                      {request.contactEmail}
+                                    </div>
+                                  )}
+                                  {request.contactPhone && (
+                                    <div>
+                                      <i className="bi bi-telephone me-1"></i>
+                                      {request.contactPhone}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Completion Status */}
+                          <div className="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                              {request.requesterCompleted && (
+                                <span className="badge bg-info me-2">
+                                  <i className="bi bi-person-check me-1"></i>
+                                  Requester completed
+                                </span>
+                              )}
+                              {request.receiverCompleted && (
+                                <span className="badge bg-info me-2">
+                                  <i className="bi bi-person-check me-1"></i>
+                                  Receiver completed
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Session Summary */}
+                          {request.sessionSummary && (
+                            <div className="alert alert-info">
+                              <strong>Session Summary:</strong>
+                              <br />
+                              {request.sessionSummary}
+                            </div>
+                          )}
+
+                          {/* Action Buttons */}
+                          <div className="d-flex gap-2 flex-wrap">
+                            {request.status === 'accepted' && 
+                             ((user._id === request.requesterId?._id && !request.requesterCompleted) ||
+                              (user._id === request.receiverId?._id && !request.receiverCompleted)) && (
+                              <button
+                                className="btn btn-success btn-sm"
+                                onClick={() => handleShowCompletionModal(request)}
+                              >
+                                <i className="bi bi-check-circle me-1"></i>
+                                Mark Session Completed
+                              </button>
+                            )}
+
+                            {!request.sessionTime && (
+                              <button
+                                className="btn btn-outline-primary btn-sm"
+                                onClick={() => handleShowScheduleModal(request)}
+                              >
+                                <i className="bi bi-calendar-plus me-1"></i>
+                                Suggest Time
+                              </button>
+                            )}
+                          </div>
+
+                          {/* Show feedback option for completed swaps */}
+                          {request.status === 'completed' && !feedbackData[request._id] && (
                             <button
-                              className="btn btn-outline-warning btn-sm"
+                              className="btn btn-outline-warning btn-sm mt-2"
                               onClick={() => handleShowFeedbackForm(request)}
                             >
                               <i className="bi bi-star me-1"></i>
                               Rate Experience
                             </button>
                           )}
-                          {feedbackData[request._id] && (
-                            <small className="text-muted">
+                          {request.status === 'completed' && feedbackData[request._id] && (
+                            <small className="text-muted mt-2 d-block">
                               <i className="bi bi-check-circle me-1"></i>
                               Feedback submitted
                             </small>
@@ -580,7 +910,8 @@ const Dashboard = () => {
                         </div>
                       )}
                     </div>
-                  ))}
+                  )
+                  })}
                 </div>
               ) : (
                 <div className="text-center py-4 text-muted">
@@ -622,6 +953,22 @@ const Dashboard = () => {
           </div>
         </div>
       )}
+
+      {/* Schedule Modal */}
+      <ScheduleModal
+        show={!!showScheduleModal}
+        onHide={() => setShowScheduleModal(null)}
+        onSchedule={handleScheduleSubmit}
+        swapRequest={showScheduleModal}
+      />
+
+      {/* Completion Modal */}
+      <CompletionModal
+        show={!!showCompletionModal}
+        onHide={() => setShowCompletionModal(null)}
+        onComplete={handleCompletionSubmit}
+        swapRequest={showCompletionModal}
+      />
     </div>
   );
 };
