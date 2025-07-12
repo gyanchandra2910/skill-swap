@@ -3,6 +3,12 @@ const User = require('../models/User');
 const SwapRequest = require('../models/SwapRequest');
 const Feedback = require('../models/Feedback');
 const { authenticate } = require('../middleware/auth');
+const { 
+  sendUserBannedEmail, 
+  sendUserUnbannedEmail, 
+  sendAdminWelcomeEmail,
+  sendPlatformReportEmail 
+} = require('../utils/emailService');
 
 const router = express.Router();
 
@@ -157,6 +163,13 @@ router.put('/users/:id/ban', authenticate, requireAdmin, async (req, res) => {
       });
     }
 
+    // Send email notification
+    if (ban) {
+      sendUserBannedEmail(user.email, user.name, reason);
+    } else {
+      sendUserUnbannedEmail(user.email, user.name);
+    }
+
     res.json({
       success: true,
       message: ban ? 
@@ -173,6 +186,66 @@ router.put('/users/:id/ban', authenticate, requireAdmin, async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Server error while updating user ban status'
+    });
+  }
+});
+
+// @route   POST /api/admin/users/:id/promote
+// @desc    Promote a user to admin
+// @access  Private (Admin only)
+router.put('/users/:id/promote', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    if (user.role === 'admin') {
+      return res.status(400).json({
+        success: false,
+        message: 'User is already an admin'
+      });
+    }
+
+    // Promote to admin
+    user.role = 'admin';
+    await user.save();
+
+    // Send welcome email to new admin
+    try {
+      await sendAdminWelcomeEmail(user.email, user.name);
+    } catch (emailError) {
+      console.error('Failed to send admin welcome email:', emailError);
+    }
+
+    // Emit real-time notification
+    if (req.io) {
+      req.io.to(user._id.toString()).emit('role_changed', {
+        type: 'promoted_to_admin',
+        message: 'Congratulations! You have been promoted to administrator.',
+        newRole: 'admin'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: `${user.name} has been promoted to admin`,
+      user: {
+        ...user.toObject(),
+        password: undefined
+      }
+    });
+
+  } catch (error) {
+    console.error('Admin promote user error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while promoting user'
     });
   }
 });
@@ -429,6 +502,111 @@ router.get('/users/:id/activity', authenticate, requireAdmin, async (req, res) =
     res.status(500).json({
       success: false,
       message: 'Server error while fetching user activity'
+    });
+  }
+});
+
+// @route   POST /api/admin/send-report
+// @desc    Send platform report to all admins
+// @access  Private (Admin only)
+router.post('/send-report', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const { period = 'Weekly' } = req.body;
+
+    // Get platform statistics
+    const [
+      totalUsers,
+      totalActiveUsers,
+      totalBannedUsers,
+      totalSwaps,
+      pendingSwaps,
+      acceptedSwaps,
+      totalFeedback,
+      avgRatingResult
+    ] = await Promise.all([
+      User.countDocuments(),
+      User.countDocuments({ isBanned: { $ne: true } }),
+      User.countDocuments({ isBanned: true }),
+      SwapRequest.countDocuments(),
+      SwapRequest.countDocuments({ status: 'pending' }),
+      SwapRequest.countDocuments({ status: 'accepted' }),
+      Feedback.countDocuments(),
+      Feedback.aggregate([
+        { $group: { _id: null, avgRating: { $avg: '$rating' } } }
+      ])
+    ]);
+
+    const stats = {
+      totalUsers,
+      totalActiveUsers,
+      totalBannedUsers,
+      totalSwaps,
+      pendingSwaps,
+      acceptedSwaps,
+      totalFeedback,
+      avgRating: avgRatingResult.length > 0 ? 
+        Math.round(avgRatingResult[0].avgRating * 10) / 10 : 0
+    };
+
+    // Get all admin emails
+    const admins = await User.find({ role: 'admin' }).select('email name');
+    
+    const emailPromises = admins.map(admin => 
+      sendPlatformReportEmail(admin.email, admin.name, stats, period)
+    );
+
+    await Promise.all(emailPromises);
+
+    res.json({
+      success: true,
+      message: `Platform report sent to ${admins.length} admin(s)`,
+      recipients: admins.map(admin => admin.email),
+      stats
+    });
+
+  } catch (error) {
+    console.error('Send platform report error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while sending platform report'
+    });
+  }
+});
+
+// @route   POST /api/admin/test-email
+// @desc    Test email configuration
+// @access  Private (Admin only)
+router.post('/test-email', authenticate, requireAdmin, async (req, res) => {
+  try {
+    const { sendUserBannedEmail } = require('../utils/emailService');
+    
+    // Send test email to the requesting admin
+    const result = await sendUserBannedEmail(
+      req.user.email, 
+      req.user.name, 
+      'This is a test email to verify email configuration is working properly.'
+    );
+
+    if (result.success) {
+      res.json({
+        success: true,
+        message: 'Test email sent successfully',
+        messageId: result.messageId
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to send test email',
+        error: result.error
+      });
+    }
+
+  } catch (error) {
+    console.error('Test email error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while sending test email',
+      error: error.message
     });
   }
 });
