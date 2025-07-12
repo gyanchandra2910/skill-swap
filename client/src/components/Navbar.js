@@ -62,6 +62,14 @@ const Navbar = () => {
                 </Link>
               </li>
             )}
+            {isLoggedIn && user?.role === 'admin' && (
+              <li className="nav-item">
+                <Link className="nav-link" to="/admin">
+                  <i className="bi bi-gear me-1"></i>
+                  Admin
+                </Link>
+              </li>
+            )}
           </ul>
 
           <ul className="navbar-nav">
@@ -89,6 +97,14 @@ const Navbar = () => {
                         Dashboard
                       </Link>
                     </li>
+                    {user?.role === 'admin' && (
+                      <li>
+                        <Link className="dropdown-item" to="/admin">
+                          <i className="bi bi-gear me-1"></i>
+                          Admin Panel
+                        </Link>
+                      </li>
+                    )}
                     <li><hr className="dropdown-divider" /></li>
                     <li>
                       <button

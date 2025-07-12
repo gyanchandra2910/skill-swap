@@ -32,6 +32,16 @@ const authenticate = async (req, res, next) => {
         });
       }
 
+      // Check if user is banned
+      if (user.isBanned) {
+        return res.status(403).json({
+          success: false,
+          message: 'Account has been banned',
+          banReason: user.banReason,
+          bannedAt: user.bannedAt
+        });
+      }
+
       // Add user to request object
       req.user = user;
       next();

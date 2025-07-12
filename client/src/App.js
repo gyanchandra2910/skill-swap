@@ -13,6 +13,7 @@ import Register from './components/Register';
 import Search from './components/Search';
 import Dashboard from './components/Dashboard';
 import Profile from './components/Profile';
+import AdminDashboard from './components/AdminDashboard';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
               <Route path="/search" element={<Search />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/admin" element={<AdminDashboard />} />
             </Routes>
           </div>
           
