@@ -9,7 +9,7 @@ const Navbar = () => {
     // Check if user is logged in
     const token = localStorage.getItem('token');
     const userData = localStorage.getItem('user');
-    
+
     if (token && userData) {
       setIsLoggedIn(true);
       setUser(JSON.parse(userData));
@@ -30,10 +30,10 @@ const Navbar = () => {
         <Link className="navbar-brand" to="/">
           Skill Swap
         </Link>
-        <button 
-          className="navbar-toggler" 
-          type="button" 
-          data-bs-toggle="collapse" 
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
           data-bs-target="#navbarNav"
         >
           <span className="navbar-toggler-icon"></span>
@@ -63,7 +63,7 @@ const Navbar = () => {
               </li>
             )}
           </ul>
-          
+
           <ul className="navbar-nav">
             {isLoggedIn ? (
               <>
@@ -91,10 +91,10 @@ const Navbar = () => {
                     </li>
                     <li><hr className="dropdown-divider" /></li>
                     <li>
-                      <button 
-                        className="dropdown-item" 
+                      <button
+                        className="dropdown-item"
                         onClick={handleLogout}
-                        style={{border: 'none', background: 'none', width: '100%', textAlign: 'left'}}
+                        style={{ border: 'none', background: 'none', width: '100%', textAlign: 'left' }}
                       >
                         Logout
                       </button>

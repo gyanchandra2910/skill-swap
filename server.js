@@ -34,6 +34,33 @@ app.get('/', (req, res) => {
   res.json({ message: 'Skill Swap API is running!' });
 });
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+
+  // Handle specific error types
+  if (err.name === 'ValidationError') {
+    return res.status(400).json({
+      success: false,
+      message: 'Validation Error',
+      errors: Object.values(err.errors).map(e => e.message)
+    });
+  }
+
+  if (err.name === 'MongoError' && err.code === 11000) {
+    return res.status(400).json({
+      success: false,
+      message: 'Duplicate key error'
+    });
+  }
+
+  // Default error response
+  res.status(500).json({
+    success: false,
+    message: 'Internal Server Error'
+  });
+});
+
 // Start server
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
