@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import SwapRequestModal from './SwapRequestModal';
+import UserProfile from './UserProfile';
 
 const Search = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -12,6 +13,7 @@ const Search = () => {
   const [hasSearched, setHasSearched] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const [notification, setNotification] = useState('');
 
   const handleSearch = async (e) => {
@@ -79,8 +81,18 @@ const Search = () => {
     setShowModal(true);
   };
 
+  const handleViewProfile = (user) => {
+    setSelectedUser(user);
+    setShowProfileModal(true);
+  };
+
   const handleCloseModal = () => {
     setShowModal(false);
+    setSelectedUser(null);
+  };
+
+  const handleCloseProfileModal = () => {
+    setShowProfileModal(false);
     setSelectedUser(null);
   };
 
@@ -341,7 +353,10 @@ const Search = () => {
 
                         {/* Actions */}
                         <div className="d-grid gap-2">
-                          <button className="btn btn-outline-primary btn-sm">
+                          <button 
+                            className="btn btn-outline-primary btn-sm"
+                            onClick={() => handleViewProfile(user)}
+                          >
                             <i className="bi bi-person me-1"></i>
                             View Profile
                           </button>
@@ -375,6 +390,15 @@ const Search = () => {
           user={selectedUser}
           onClose={handleCloseModal}
           onSuccess={handleSwapSuccess}
+        />
+      )}
+
+      {/* User Profile Modal */}
+      {showProfileModal && selectedUser && (
+        <UserProfile
+          user={selectedUser}
+          onClose={handleCloseProfileModal}
+          onRequestSwap={handleRequestSwap}
         />
       )}
     </div>

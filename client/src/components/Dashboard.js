@@ -116,7 +116,8 @@ const Dashboard = () => {
 
   const getOtherUser = (request) => {
     if (!user) return null;
-    return request.requesterId._id === user._id ? request.receiverId : request.requesterId;
+    // If current user is the requester, return the receiver, otherwise return the requester
+    return request.requesterId && request.requesterId._id === user._id ? request.receiverId : request.requesterId;
   };
 
   const handleLogout = () => {
@@ -594,6 +595,33 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Feedback Form Modal */}
+      {showFeedbackForm && (
+        <div className="modal show d-block" tabIndex="-1" style={{backgroundColor: 'rgba(0,0,0,0.5)'}}>
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Rate Your Experience</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={handleFeedbackCancel}
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div className="modal-body">
+                <FeedbackForm
+                  swap={showFeedbackForm}
+                  otherUser={getOtherUser(showFeedbackForm)}
+                  onSuccess={handleFeedbackSuccess}
+                  onCancel={handleFeedbackCancel}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
