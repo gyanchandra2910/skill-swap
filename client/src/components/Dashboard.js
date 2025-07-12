@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { useSocket } from '../context/SocketContext';
+import FeedbackForm from './FeedbackForm';
+import FeedbackDisplay from './FeedbackDisplay';
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
@@ -13,6 +15,8 @@ const Dashboard = () => {
   const [notification, setNotification] = useState('');
   const [requestsLoading, setRequestsLoading] = useState(false);
   const { socket, connected } = useSocket();
+  const [showFeedbackForm, setShowFeedbackForm] = useState(null);
+  const [feedbackData, setFeedbackData] = useState({});
 
   useEffect(() => {
     // Get user data from localStorage
@@ -88,6 +92,31 @@ const Dashboard = () => {
       setNotification(`Failed to ${action} swap request. Please try again.`);
       setTimeout(() => setNotification(''), 5000);
     }
+  };
+
+  const handleShowFeedbackForm = (request) => {
+    setShowFeedbackForm(request);
+  };
+
+  const handleFeedbackSuccess = (feedback) => {
+    setShowFeedbackForm(null);
+    setNotification('Feedback submitted successfully!');
+    setTimeout(() => setNotification(''), 5000);
+    
+    // Mark this swap as having feedback
+    setFeedbackData(prev => ({
+      ...prev,
+      [showFeedbackForm._id]: true
+    }));
+  };
+
+  const handleFeedbackCancel = () => {
+    setShowFeedbackForm(null);
+  };
+
+  const getOtherUser = (request) => {
+    if (!user) return null;
+    return request.requesterId._id === user._id ? request.receiverId : request.requesterId;
   };
 
   const handleLogout = () => {
@@ -410,6 +439,37 @@ const Dashboard = () => {
                           </button>
                         </div>
                       )}
+
+                      {request.status === 'accepted' && (
+                        <div>
+                          <div className="text-success small mb-2">
+                            <i className="bi bi-check-circle me-1"></i>
+                            Swap completed successfully!
+                          </div>
+                          {!feedbackData[request._id] && (
+                            <button
+                              className="btn btn-outline-warning btn-sm"
+                              onClick={() => handleShowFeedbackForm(request)}
+                            >
+                              <i className="bi bi-star me-1"></i>
+                              Rate Experience
+                            </button>
+                          )}
+                          {feedbackData[request._id] && (
+                            <small className="text-muted">
+                              <i className="bi bi-check-circle me-1"></i>
+                              Feedback submitted
+                            </small>
+                          )}
+                        </div>
+                      )}
+
+                      {request.status === 'rejected' && (
+                        <div className="text-danger small">
+                          <i className="bi bi-x-circle me-1"></i>
+                          Request was declined.
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -489,9 +549,26 @@ const Dashboard = () => {
                       )}
 
                       {request.status === 'accepted' && (
-                        <div className="text-success small">
-                          <i className="bi bi-check-circle me-1"></i>
-                          Request accepted! You can now connect.
+                        <div>
+                          <div className="text-success small mb-2">
+                            <i className="bi bi-check-circle me-1"></i>
+                            Request accepted! You can now connect.
+                          </div>
+                          {!feedbackData[request._id] && (
+                            <button
+                              className="btn btn-outline-warning btn-sm"
+                              onClick={() => handleShowFeedbackForm(request)}
+                            >
+                              <i className="bi bi-star me-1"></i>
+                              Rate Experience
+                            </button>
+                          )}
+                          {feedbackData[request._id] && (
+                            <small className="text-muted">
+                              <i className="bi bi-check-circle me-1"></i>
+                              Feedback submitted
+                            </small>
+                          )}
                         </div>
                       )}
 
