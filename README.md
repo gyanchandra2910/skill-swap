@@ -63,16 +63,7 @@ View the original design mockup: [Excalidraw Mockup](https://link.excalidraw.com
 - **Analytics & Reporting**: Download reports of user activity, feedback logs, and swap statistics
 - **Email Configuration**: Test and manage email notification systems
 
-### Core Functionality
-### Additional Platform Features
-- **Skill Exchange**: Find people to learn from and teach your own skills
-- **User Profiles**: Comprehensive profiles showcasing skills, experience, and feedback
-- **Real-time Messaging**: Built-in chat system for seamless communication
-- **Session Booking**: Schedule and manage learning/teaching sessions
-- **Feedback System**: Rate and review your learning experiences
-- **Search & Discovery**: Advanced search to find skills and users by location, expertise level, and availability
-
-### Technical Features
+### 🖥️ Technical Features
 - **Responsive Design**: Works perfectly on desktop, tablet, and mobile devices
 - **Real-time Notifications**: Instant updates for messages, bookings, and feedback
 - **Secure Authentication**: JWT-based authentication with password encryption
