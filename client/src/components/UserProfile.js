@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import FeedbackDisplay from './FeedbackDisplay';
 
 const UserProfile = ({ user, onClose, onRequestSwap }) => {
   const [feedback, setFeedback] = useState([]);
@@ -202,11 +201,84 @@ const UserProfile = ({ user, onClose, onRequestSwap }) => {
                         </div>
                       </div>
                     ) : feedback.length > 0 ? (
-                      <FeedbackDisplay 
-                        feedback={feedback} 
-                        averageRating={averageRating}
-                        totalReviews={totalReviews}
-                      />
+                      <div>
+                        {/* Overall Rating Summary */}
+                        <div className="row mb-4">
+                          <div className="col-md-4 text-center">
+                            <div className="display-6 fw-bold text-warning mb-2">
+                              {averageRating.toFixed(1)}
+                            </div>
+                            <div className="mb-2">
+                              {renderStars(Math.round(averageRating))}
+                            </div>
+                            <div className="text-muted small">
+                              Based on {totalReviews} review{totalReviews !== 1 ? 's' : ''}
+                            </div>
+                          </div>
+                          <div className="col-md-8">
+                            <div className="mb-2">
+                              <small className="text-muted">Recent feedback from skill swap partners</small>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Individual Reviews */}
+                        <div className="feedback-list">
+                          {feedback.slice(0, 3).map((review, index) => (
+                            <div key={review._id || index} className="border-bottom pb-3 mb-3">
+                              <div className="d-flex justify-content-between align-items-start mb-2">
+                                <div className="d-flex align-items-center">
+                                  <div className="me-2">
+                                    {review.fromUserId?.profilePhoto ? (
+                                      <img
+                                        src={review.fromUserId.profilePhoto}
+                                        alt={review.fromUserId.name}
+                                        className="rounded-circle"
+                                        style={{ width: '32px', height: '32px', objectFit: 'cover' }}
+                                      />
+                                    ) : (
+                                      <div
+                                        className="bg-secondary rounded-circle d-flex align-items-center justify-content-center text-white"
+                                        style={{ width: '32px', height: '32px', fontSize: '0.8rem' }}
+                                      >
+                                        {review.fromUserId?.name?.charAt(0)?.toUpperCase() || '?'}
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div>
+                                    <h6 className="mb-0">{review.fromUserId?.name || 'Anonymous'}</h6>
+                                    <small className="text-muted">
+                                      {new Date(review.createdAt).toLocaleDateString()}
+                                    </small>
+                                  </div>
+                                </div>
+                                <div>
+                                  {renderStars(review.rating)}
+                                </div>
+                              </div>
+                              
+                              {review.swapId && (
+                                <div className="mb-2">
+                                  <small className="text-muted">
+                                    <i className="bi bi-arrow-left-right me-1"></i>
+                                    Skill swap: {review.swapId.skillOffered} ↔ {review.swapId.skillWanted}
+                                  </small>
+                                </div>
+                              )}
+                              
+                              <p className="mb-0 text-dark">{review.comment}</p>
+                            </div>
+                          ))}
+                          
+                          {feedback.length > 3 && (
+                            <div className="text-center">
+                              <small className="text-muted">
+                                Showing 3 of {feedback.length} reviews
+                              </small>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     ) : (
                       <div className="text-center py-4 text-muted">
                         <i className="bi bi-chat-square display-4 mb-3"></i>
