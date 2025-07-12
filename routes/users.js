@@ -113,6 +113,59 @@ router.get('/public', async (req, res) => {
   }
 });
 
+// @route   GET /api/users/search
+// @desc    Search users by skills
+// @access  Public
+router.get('/search', async (req, res) => {
+  try {
+    const { skill, location, availability } = req.query;
+
+    if (!skill) {
+      return res.status(400).json({
+        success: false,
+        message: 'Search keyword is required'
+      });
+    }
+
+    // Build search query
+    const searchQuery = {
+      isPublic: true,
+      $or: [
+        { skillsOffered: { $regex: skill, $options: 'i' } },
+        { skillsWanted: { $regex: skill, $options: 'i' } }
+      ]
+    };
+
+    // Add optional filters
+    if (location) {
+      searchQuery.location = { $regex: location, $options: 'i' };
+    }
+
+    if (availability) {
+      searchQuery.availability = availability;
+    }
+
+    const users = await User.find(searchQuery)
+      .select('-password')
+      .sort({ createdAt: -1 })
+      .limit(50); // Limit results to 50 users
+
+    res.json({
+      success: true,
+      count: users.length,
+      users,
+      searchTerm: skill
+    });
+
+  } catch (error) {
+    console.error('Search users error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error during search'
+    });
+  }
+});
+
 // @route   GET /api/users/:id
 // @desc    Get user profile by ID
 // @access  Public (only if profile is public)
