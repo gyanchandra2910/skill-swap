@@ -651,7 +651,7 @@ const Dashboard = () => {
                           </div>
 
                           {/* Show feedback option for completed swaps */}
-                          {request.status === 'completed' && !feedbackData[request._id] && (
+                          {(request.status === 'accepted' || request.status === 'completed') && !feedbackData[request._id] && (
                             <button
                               className="btn btn-outline-warning btn-sm mt-2"
                               onClick={() => handleShowFeedbackForm(request)}
@@ -660,7 +660,7 @@ const Dashboard = () => {
                               Rate Experience
                             </button>
                           )}
-                          {request.status === 'completed' && feedbackData[request._id] && (
+                          {(request.status === 'accepted' || request.status === 'completed') && feedbackData[request._id] && (
                             <small className="text-muted mt-2 d-block">
                               <i className="bi bi-check-circle me-1"></i>
                               Feedback submitted
@@ -885,7 +885,7 @@ const Dashboard = () => {
                           </div>
 
                           {/* Show feedback option for completed swaps */}
-                          {request.status === 'completed' && !feedbackData[request._id] && (
+                          {(request.status === 'accepted' || request.status === 'completed') && !feedbackData[request._id] && (
                             <button
                               className="btn btn-outline-warning btn-sm mt-2"
                               onClick={() => handleShowFeedbackForm(request)}
@@ -894,7 +894,7 @@ const Dashboard = () => {
                               Rate Experience
                             </button>
                           )}
-                          {request.status === 'completed' && feedbackData[request._id] && (
+                          {(request.status === 'accepted' || request.status === 'completed') && feedbackData[request._id] && (
                             <small className="text-muted mt-2 d-block">
                               <i className="bi bi-check-circle me-1"></i>
                               Feedback submitted

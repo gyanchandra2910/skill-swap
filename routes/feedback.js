@@ -29,7 +29,7 @@ router.post('/', authenticate, async (req, res) => {
       });
     }
 
-    // Check if swap exists and is accepted
+    // Check if swap exists and is accepted or completed
     const swap = await SwapRequest.findById(swapId);
     if (!swap) {
       return res.status(404).json({
@@ -38,10 +38,10 @@ router.post('/', authenticate, async (req, res) => {
       });
     }
 
-    if (swap.status !== 'accepted') {
+    if (swap.status !== 'accepted' && swap.status !== 'completed') {
       return res.status(400).json({
         success: false,
-        message: 'Can only provide feedback for accepted swaps'
+        message: 'Can only provide feedback for accepted or completed swaps'
       });
     }
 
