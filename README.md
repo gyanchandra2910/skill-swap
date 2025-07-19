@@ -1,32 +1,101 @@
-# Skill Swap - Learn & Teach Skills Through Community Exchange
+# Skill Swap Platform
 
-![Skill Swap Logo](client/public/favicon.jpg)
+A modern skill-sharing platform that connects learners and teachers in a collaborative environment.
 
-**Skill Swap** is a modern, community-driven platform that connects learners and teachers in a collaborative skill-sharing environment. Whether you're looking to master a new skill or share your expertise with others, Skill Swap makes it easy to connect with like-minded individuals in your community.
+## Features
 
-## 📋 Project Overview
+- **User Authentication**: Secure registration and login
+- **Skill Management**: List skills you can teach and skills you want to learn
+- **Swap Requests**: Send and receive skill exchange requests
+- **Real-time Notifications**: Get notified of new requests and messages
+- **Feedback System**: Rate and review completed skill exchanges
+- **User Profiles**: Manage your skills, availability, and preferences
 
-**Skill Swap Platform** is a mini application that enables users to list their skills and request others in return. This platform facilitates skill exchange within communities, allowing users to teach what they know and learn what they need.
+## Tech Stack
 
-### 🎯 Problem Statement
-Develop a comprehensive skill-sharing platform where users can:
-- List skills they can offer to others
-- Request skills they want to learn
-- Connect with community members for mutual skill exchange
-- Manage swap requests and provide feedback
-- Maintain profiles with availability and preferences
+**Frontend:**
+- React.js
+- Bootstrap
+- Socket.io Client
 
-### 📐 Design Mockup
-View the original design mockup: [Excalidraw Mockup](https://link.excalidraw.com/l/65VNwvy7c4X/8bM86GXnnUN)
+**Backend:**
+- Node.js
+- Express.js
+- MongoDB
+- Socket.io
+- JWT Authentication
 
-## 🎬 Demo Video
+## Quick Start
 
-*Demo video coming soon...*
+### Prerequisites
+- Node.js (v14 or higher)
+- MongoDB (local or Atlas)
 
-<!-- ![Demo Video Thumbnail](demo-thumbnail.jpg) -->
-<!-- [Watch the Demo Video](https://youtu.be/your-video-id) -->
+### Installation
 
-## ✨ Features
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd skill-swap
+   ```
+
+2. **Install server dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Install client dependencies**
+   ```bash
+   cd client
+   npm install
+   cd ..
+   ```
+
+4. **Configure environment variables**
+   Create a `.env` file in the root directory:
+   ```
+   PORT=5000
+   MONGO_URI=mongodb://localhost:27017/skillswap
+   JWT_SECRET=your-secret-key
+   NODE_ENV=development
+   EMAIL_USER=your-email@gmail.com
+   EMAIL_PASS=your-app-password
+   CLIENT_URL=http://localhost:3000
+   ```
+
+5. **Start the application**
+   ```bash
+   # Start both server and client
+   npm run dev-full
+   
+   # Or start them separately:
+   npm run dev        # Server only
+   npm run client     # Client only
+   ```
+
+6. **Access the application**
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:5000
+
+## Available Scripts
+
+- `npm start` - Start production server
+- `npm run dev` - Start development server with nodemon
+- `npm run client` - Start React client
+- `npm run dev-full` - Start both server and client concurrently
+
+## API Endpoints
+
+- `POST /api/auth/register` - User registration
+- `POST /api/auth/login` - User login
+- `GET /api/users/profile` - Get user profile
+- `GET /api/swaps` - Get swap requests
+- `POST /api/swaps` - Create swap request
+- `POST /api/feedback` - Submit feedback
+
+## License
+
+MIT License
 
 ### 👤 User Profile Management
 - **Basic Information**: Name, location (optional), profile photo (optional)
