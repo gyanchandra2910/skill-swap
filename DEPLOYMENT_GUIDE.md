@@ -36,22 +36,23 @@
 4. Railway will automatically detect it's a Node.js project
 
 ### Step 3: Configure Environment Variables
-Add these environment variables in Railway dashboard:
+Add these environment variables in Railway dashboard Variables tab:
 
 ```env
 NODE_ENV=production
 MONGO_URI=mongodb+srv://gyan995518:Gyan29102003%23%40123@skillswap-cluster.ogd5rcr.mongodb.net/?retryWrites=true&w=majority&appName=skillswap-cluster
-JWT_SECRET=your-super-secret-jwt-key-for-production-change-this-to-something-very-secure
+JWT_SECRET=MySuper$ecur3JWT$ecretK3yForProduction2024!
 EMAIL_USER=thesiliconsavants@gmail.com
 EMAIL_PASS=mgep ewfj tqcy dpxd
-CLIENT_URL=https://your-app-name.up.railway.app
+CLIENT_URL=https://your-actual-railway-domain.up.railway.app
 ```
 
-### Step 4: Deploy
-1. Railway will automatically build and deploy your app
-2. You'll get a URL like `https://your-app-name.up.railway.app`
+### Step 4: Generate Domain & Deploy
+1. Click "Generate Domain" in the Networking section to get your public URL
+2. Copy the generated URL (e.g., `https://skill-swap-production-abc123.up.railway.app`)
 3. Update the `CLIENT_URL` environment variable with your actual URL
-4. Redeploy if needed
+4. Railway will automatically build and deploy your app
+5. Wait for deployment to complete (usually 2-5 minutes)
 
 ---
 
@@ -130,13 +131,19 @@ git push heroku main
 - Solution: Railway should now properly install both root and client dependencies
 - Solution: Make sure both package.json files are committed to Git
 
-**Issue: Build Fails**
-- Solution: Make sure all dependencies are in package.json
-- Solution: Check if build scripts are correctly configured
-- Solution: Verify nixpacks.toml is properly configured
+**Issue: Railway Build Fails**
+- Solution: Check the build logs in Railway dashboard under "Deployments"
+- Solution: Ensure Dockerfile is properly configured (we've added this)
+- Solution: Verify nixpacks.toml is correctly set up for monorepo structure
+
+**Issue: Environment Variables Not Working**
+- Solution: Make sure all variables are added in Railway Variables tab
+- Solution: Ensure CLIENT_URL matches your actual Railway domain
+- Solution: Check that MONGO_URI is properly URL-encoded
 
 **Issue: 404 on Refresh**
 - Solution: Ensure static file serving is configured for React Router
+- Solution: Verify Dockerfile properly builds and serves React files
 
 ---
 
