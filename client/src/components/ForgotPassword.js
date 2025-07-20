@@ -1,46 +1,33 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-const Login = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
+const ForgotPassword = () => {
+  const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setMessage('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch('http://localhost:5000/api/auth/forgot-password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ email }),
       });
 
       const data = await response.json();
 
       if (data.success) {
-        // Store token in localStorage
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        
-        // Redirect to dashboard (you can use navigate from react-router-dom v6)
-        window.location.href = '/dashboard';
+        setMessage(data.message);
       } else {
-        setError(data.message || 'Login failed');
+        setError(data.message || 'Something went wrong');
       }
     } catch (err) {
       setError('Network error. Please try again.');
@@ -54,7 +41,7 @@ const Login = () => {
       <div className="col-md-6 col-lg-4">
         <div className="card shadow">
           <div className="card-header bg-primary text-white text-center">
-            <h4>Login to Skill Swap</h4>
+            <h4>Reset Password</h4>
           </div>
           <div className="card-body">
             {error && (
@@ -62,6 +49,16 @@ const Login = () => {
                 {error}
               </div>
             )}
+            
+            {message && (
+              <div className="alert alert-success" role="alert">
+                {message}
+              </div>
+            )}
+            
+            <p className="text-muted mb-4">
+              Enter your email address and we'll send you a link to reset your password.
+            </p>
             
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
@@ -72,25 +69,10 @@ const Login = () => {
                   type="email"
                   className="form-control"
                   id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
-                />
-              </div>
-              
-              <div className="mb-3">
-                <label htmlFor="password" className="form-label">
-                  Password
-                </label>
-                <input
-                  type="password"
-                  className="form-control"
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  required
+                  placeholder="Enter your email address"
                 />
               </div>
               
@@ -103,28 +85,19 @@ const Login = () => {
                   {loading ? (
                     <>
                       <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                      Logging in...
+                      Sending...
                     </>
                   ) : (
-                    'Login'
+                    'Send Reset Link'
                   )}
                 </button>
               </div>
             </form>
             
-            <div className="text-center mt-2">
-              <Link to="/forgot-password" className="text-muted small">
-                Forgot Password?
-              </Link>
-            </div>
-            
             <div className="text-center mt-3">
-              <p className="mb-0">
-                Don't have an account?{' '}
-                <Link to="/register" className="text-primary">
-                  Sign up here
-                </Link>
-              </p>
+              <Link to="/login" className="text-primary">
+                Back to Login
+              </Link>
             </div>
           </div>
         </div>
@@ -133,4 +106,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ForgotPassword;

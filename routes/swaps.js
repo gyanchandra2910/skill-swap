@@ -2,6 +2,7 @@ const express = require('express');
 const SwapRequest = require('../models/SwapRequest');
 const User = require('../models/User');
 const { authenticate } = require('../middleware/auth');
+const emailService = require('../utils/emailService');
 
 const router = express.Router();
 
@@ -75,6 +76,22 @@ router.post('/', authenticate, async (req, res) => {
     });
 
     await swapRequest.save();
+
+    // Send email notification to receiver
+    try {
+      await emailService.sendSwapRequestEmail(
+        receiver.email,
+        receiver.name,
+        req.user.name,
+        skillOffered,
+        skillWanted,
+        message
+      );
+      console.log(`Swap request email sent to ${receiver.email}`);
+    } catch (emailError) {
+      console.error('Error sending swap request email:', emailError);
+      // Don't fail the request if email fails
+    }
 
     // Populate user details for response
     await swapRequest.populateUsers();

@@ -14,6 +14,144 @@ const createTransporter = () => {
 
 // Email templates
 const emailTemplates = {
+  // Welcome email for new users
+  welcome: (userName) => ({
+    subject: '🎉 Welcome to Skill Swap Platform!',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+          <h1 style="margin: 0; font-size: 28px;">🎉 Welcome to Skill Swap!</h1>
+        </div>
+        
+        <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px; border: 1px solid #dee2e6;">
+          <h2 style="color: #007bff; margin-top: 0;">Hello ${userName}!</h2>
+          
+          <p style="font-size: 16px; line-height: 1.6; color: #495057;">
+            Welcome to Skill Swap, the platform where knowledge meets opportunity! 🚀
+          </p>
+          
+          <div style="background: #fff; padding: 20px; border-radius: 5px; border-left: 4px solid #007bff; margin: 20px 0;">
+            <h3 style="color: #007bff; margin-top: 0;">🌟 What you can do now:</h3>
+            <ul style="color: #495057; line-height: 1.8;">
+              <li>📝 Complete your profile with skills you can teach</li>
+              <li>🔍 Browse and connect with other learners and teachers</li>
+              <li>💬 Send and receive skill swap requests</li>
+              <li>⭐ Leave feedback after successful exchanges</li>
+            </ul>
+          </div>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${process.env.CLIENT_URL}" style="display: inline-block; background: #007bff; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+              Get Started Now 🚀
+            </a>
+          </div>
+          
+          <p style="font-size: 16px; line-height: 1.6; color: #495057;">
+            If you have any questions, feel free to reach out to us at 
+            <a href="mailto:${process.env.EMAIL_USER}" style="color: #007bff;">${process.env.EMAIL_USER}</a>.
+          </p>
+          
+          <hr style="border: none; border-top: 1px solid #dee2e6; margin: 30px 0;">
+          
+          <p style="font-size: 14px; color: #6c757d; margin: 0;">
+            Happy learning and teaching!<br>
+            <strong>The Skill Swap Team</strong> 🎓
+          </p>
+        </div>
+      </div>
+    `
+  }),
+
+  // Swap request notification
+  swapRequest: (receiverName, senderName, skillOffered, skillWanted, message) => ({
+    subject: '🤝 New Skill Swap Request - Skill Swap Platform',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: linear-gradient(135deg, #28a745, #20c997); color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+          <h1 style="margin: 0; font-size: 28px;">🤝 New Skill Swap Request!</h1>
+        </div>
+        
+        <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px; border: 1px solid #dee2e6;">
+          <h2 style="color: #28a745; margin-top: 0;">Hello ${receiverName}!</h2>
+          
+          <p style="font-size: 16px; line-height: 1.6; color: #495057;">
+            You have received a new skill swap request from <strong>${senderName}</strong>! 🎉
+          </p>
+          
+          <div style="background: #fff; padding: 20px; border-radius: 5px; border: 1px solid #dee2e6; margin: 20px 0;">
+            <h3 style="color: #28a745; margin-top: 0;">📋 Request Details:</h3>
+            <p style="margin: 10px 0;"><strong>They want to learn:</strong> ${skillWanted}</p>
+            <p style="margin: 10px 0;"><strong>They can teach:</strong> ${skillOffered}</p>
+            ${message ? `<p style="margin: 10px 0;"><strong>Message:</strong><br>"${message}"</p>` : ''}
+          </div>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${process.env.CLIENT_URL}/dashboard" style="display: inline-block; background: #28a745; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; margin-right: 10px;">
+              View Request 👀
+            </a>
+          </div>
+          
+          <p style="font-size: 16px; line-height: 1.6; color: #495057;">
+            Log in to your account to respond to this request and start your skill exchange journey!
+          </p>
+          
+          <hr style="border: none; border-top: 1px solid #dee2e6; margin: 30px 0;">
+          
+          <p style="font-size: 14px; color: #6c757d; margin: 0;">
+            Happy skill swapping!<br>
+            <strong>The Skill Swap Team</strong> 🎓
+          </p>
+        </div>
+      </div>
+    `
+  }),
+
+  // Password reset email
+  passwordReset: (userName, resetToken) => ({
+    subject: '🔐 Password Reset Request - Skill Swap Platform',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: linear-gradient(135deg, #dc3545, #c82333); color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+          <h1 style="margin: 0; font-size: 28px;">🔐 Password Reset</h1>
+        </div>
+        
+        <div style="background: #f8f9fa; padding: 30px; border-radius: 0 0 10px 10px; border: 1px solid #dee2e6;">
+          <h2 style="color: #dc3545; margin-top: 0;">Hello ${userName}!</h2>
+          
+          <p style="font-size: 16px; line-height: 1.6; color: #495057;">
+            You requested a password reset for your Skill Swap account. Click the button below to reset your password:
+          </p>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${process.env.CLIENT_URL}/reset-password/${resetToken}" style="display: inline-block; background: #dc3545; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">
+              Reset Password 🔑
+            </a>
+          </div>
+          
+          <div style="background: #fff; padding: 20px; border-radius: 5px; border-left: 4px solid #ffc107; margin: 20px 0;">
+            <p style="margin: 0; color: #856404;">
+              ⚠️ <strong>Security Notice:</strong> This link will expire in 1 hour. If you didn't request this reset, please ignore this email.
+            </p>
+          </div>
+          
+          <p style="font-size: 16px; line-height: 1.6; color: #495057;">
+            If the button doesn't work, copy and paste this link into your browser:<br>
+            <a href="${process.env.CLIENT_URL}/reset-password/${resetToken}" style="color: #007bff; word-break: break-all;">
+              ${process.env.CLIENT_URL}/reset-password/${resetToken}
+            </a>
+          </p>
+          
+          <hr style="border: none; border-top: 1px solid #dee2e6; margin: 30px 0;">
+          
+          <p style="font-size: 14px; color: #6c757d; margin: 0;">
+            Stay secure!<br>
+            <strong>The Skill Swap Team</strong> 🛡️
+          </p>
+        </div>
+      </div>
+    `
+  }),
+
   // User account banned notification
   userBanned: (userName, reason) => ({
     subject: '🚫 Account Suspended - Skill Swap Platform',
@@ -222,6 +360,24 @@ const sendEmail = async (to, template) => {
 };
 
 // Specific email functions
+// Send welcome email to new users
+const sendWelcomeEmail = async (userEmail, userName) => {
+  const template = emailTemplates.welcome(userName);
+  return await sendEmail(userEmail, template);
+};
+
+// Send swap request notification email
+const sendSwapRequestEmail = async (receiverEmail, receiverName, senderName, skillOffered, skillWanted, message = '') => {
+  const template = emailTemplates.swapRequest(receiverName, senderName, skillOffered, skillWanted, message);
+  return await sendEmail(receiverEmail, template);
+};
+
+// Send password reset email
+const sendPasswordResetEmail = async (userEmail, userName, resetToken) => {
+  const template = emailTemplates.passwordReset(userName, resetToken);
+  return await sendEmail(userEmail, template);
+};
+
 const sendUserBannedEmail = async (userEmail, userName, reason) => {
   const template = emailTemplates.userBanned(userName, reason);
   return await sendEmail(userEmail, template);
@@ -244,6 +400,9 @@ const sendPlatformReportEmail = async (adminEmail, adminName, stats, period = 'W
 
 module.exports = {
   sendEmail,
+  sendWelcomeEmail,
+  sendSwapRequestEmail,
+  sendPasswordResetEmail,
   sendUserBannedEmail,
   sendUserUnbannedEmail,
   sendAdminWelcomeEmail,

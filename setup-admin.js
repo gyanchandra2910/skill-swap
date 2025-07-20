@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const readline = require('readline');
 const User = require('./models/User');
 const { sendAdminWelcomeEmail } = require('./utils/emailService');
+require('dotenv').config();
 
 // Create readline interface for user input
 const rl = readline.createInterface({
@@ -19,9 +20,9 @@ function askQuestion(question) {
 
 async function setupFirstAdmin() {
   try {
-    // Connect to MongoDB
-    await mongoose.connect('mongodb://localhost:27017/skill-swap');
-    console.log('Connected to MongoDB');
+    // Connect to MongoDB Atlas
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log('Connected to MongoDB Atlas');
 
     // Check if there are any existing admins
     const existingAdmins = await User.countDocuments({ role: 'admin' });
