@@ -227,7 +227,8 @@ app.use((err, req, res, next) => {
 const host = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
 
 console.log('🚀 Starting server...');
-console.log('📋 Configuration:');
+console.log('� FRONTEND API URLS FIXED - Production deployment');
+console.log('�📋 Configuration:');
 console.log(`   - PORT: ${PORT}`);
 console.log(`   - HOST: ${host}`);
 console.log(`   - NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
