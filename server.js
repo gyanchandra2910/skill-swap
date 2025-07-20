@@ -27,7 +27,12 @@ const app = express();
 
 // Simple health check route - should work even if DB is down
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'Server is running', timestamp: new Date().toISOString() });
+  res.status(200).json({ 
+    status: 'Server is running', 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    mongoConnected: mongoose.connection.readyState === 1
+  });
 });
 
 const server = http.createServer(app);
@@ -94,16 +99,6 @@ app.use('/api/users', userRoutes);
 app.use('/api/swaps', swapRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/admin', adminRoutes);
-
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV,
-    mongoConnected: mongoose.connection.readyState === 1
-  });
-});
 
 // Serve static files from React build in production
 if (process.env.NODE_ENV === 'production') {
