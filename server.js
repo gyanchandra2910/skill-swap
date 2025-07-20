@@ -35,6 +35,35 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Detailed MongoDB diagnostic endpoint
+app.get('/mongo-debug', (req, res) => {
+  const mongoUri = process.env.MONGO_URI;
+  res.json({
+    timestamp: new Date().toISOString(),
+    mongoUri: mongoUri ? {
+      hasUri: true,
+      length: mongoUri.length,
+      startsWithMongodb: mongoUri.startsWith('mongodb'),
+      includesGyansuperuser: mongoUri.includes('gyansuperuser'),
+      includesSkillswapDb: mongoUri.includes('/skillswap'),
+      maskedUri: mongoUri.substring(0, 25) + '...' + mongoUri.substring(mongoUri.length - 10)
+    } : { hasUri: false },
+    mongooseState: {
+      readyState: mongoose.connection.readyState,
+      stateName: ['disconnected', 'connected', 'connecting', 'disconnecting'][mongoose.connection.readyState],
+      host: mongoose.connection.host,
+      port: mongoose.connection.port,
+      name: mongoose.connection.name
+    },
+    environmentVars: {
+      NODE_ENV: process.env.NODE_ENV || 'not_set',
+      PORT: process.env.PORT || 'not_set',
+      MONGO_URI_set: !!process.env.MONGO_URI,
+      JWT_SECRET_set: !!process.env.JWT_SECRET
+    }
+  });
+});
+
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
