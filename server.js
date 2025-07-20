@@ -223,7 +223,12 @@ app.get('/api/debug/admin-check', async (req, res) => {
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'client/build')));
   
-  app.get('*', (req, res) => {
+  // Serve React app for all non-API routes
+  app.get('*', (req, res, next) => {
+    // Skip API routes
+    if (req.path.startsWith('/api/')) {
+      return next();
+    }
     res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
   });
 } else {
