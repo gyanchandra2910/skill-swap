@@ -83,14 +83,15 @@ io.on('connection', (socket) => {
   });
 });
 
-// Connect to MongoDB
+// Connect to MongoDB (don't block server startup)
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
-    console.log('Connected to MongoDB Atlas');
+    console.log('✅ Connected to MongoDB Atlas');
   })
   .catch((error) => {
-    console.error('MongoDB connection error:', error);
-    console.error('MONGO_URI:', process.env.MONGO_URI ? 'Set' : 'Not set');
+    console.error('❌ MongoDB connection error:', error);
+    console.error('MONGO_URI:', process.env.MONGO_URI ? 'Set (length: ' + process.env.MONGO_URI.length + ')' : 'Not set');
+    console.log('🚀 Server will continue without MongoDB');
   });
 
 // Routes
@@ -143,14 +144,27 @@ app.use((err, req, res, next) => {
 
 // Start server
 const host = process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost';
+
+console.log('🚀 Starting server...');
+console.log('📋 Configuration:');
+console.log(`   - PORT: ${PORT}`);
+console.log(`   - HOST: ${host}`);
+console.log(`   - NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
+console.log(`   - MONGO_URI: ${process.env.MONGO_URI ? 'Set ✅' : 'Missing ❌'}`);
+console.log(`   - JWT_SECRET: ${process.env.JWT_SECRET ? 'Set ✅' : 'Missing ❌'}`);
+
 server.listen(PORT, host, () => {
-  console.log(`Server is running on ${host}:${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV}`);
-  console.log(`MongoDB URI: ${process.env.MONGO_URI ? 'Set' : 'Not set'}`);
-  console.log(`JWT Secret: ${process.env.JWT_SECRET ? 'Set' : 'Not set'}`);
-  console.log(`Email User: ${process.env.EMAIL_USER ? 'Set' : 'Not set'}`);
-  console.log(`Client URL: ${process.env.CLIENT_URL ? process.env.CLIENT_URL : 'Not set'}`);
+  console.log(`✅ Server is running on ${host}:${PORT}`);
+  console.log(`🌐 Health check: http://${host}:${PORT}/health`);
+  console.log(`📚 API endpoints: http://${host}:${PORT}/api/`);
 }).on('error', (err) => {
-  console.error('Server failed to start:', err);
+  console.error('❌ Server failed to start:', err);
+  console.error('Error details:', {
+    code: err.code,
+    errno: err.errno,
+    syscall: err.syscall,
+    address: err.address,
+    port: err.port
+  });
   process.exit(1);
 });
