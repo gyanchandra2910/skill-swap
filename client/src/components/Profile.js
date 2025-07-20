@@ -81,7 +81,7 @@ const Profile = () => {
       }
 
       const response = await axios.put(
-        'http://localhost:5000/api/users/profile',
+        '/api/users/profile',
         {
           name: data.name,
           location: data.location,

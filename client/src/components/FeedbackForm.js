@@ -57,7 +57,7 @@ const FeedbackForm = ({ swap, otherUser, onSuccess, onCancel }) => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        'http://localhost:5000/api/feedback',
+        '/api/feedback',
         {
           toUserId: otherUser._id,
           swapId: swap._id,

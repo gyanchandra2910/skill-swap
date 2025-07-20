@@ -42,7 +42,7 @@ const Search = () => {
       }
 
       const response = await axios.get(
-        `http://localhost:5000/api/users/search?${params.toString()}`
+        `/api/users/search?${params.toString()}`
       );
 
       if (response.data.success) {

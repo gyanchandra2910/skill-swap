@@ -30,7 +30,7 @@ const SwapRequestModal = ({ user, onClose, onSuccess }) => {
       }
 
       const response = await axios.post(
-        'http://localhost:5000/api/swaps',
+        '/api/swaps',
         {
           receiverId: user._id,
           skillOffered: formData.skillOffered,

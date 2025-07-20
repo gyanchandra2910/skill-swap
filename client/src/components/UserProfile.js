@@ -15,7 +15,7 @@ const UserProfile = ({ user, onClose, onRequestSwap }) => {
 
   const fetchUserFeedback = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/feedback/${user._id}`);
+      const response = await axios.get(`/api/feedback/${user._id}`);
       if (response.data.success) {
         setFeedback(response.data.feedback);
         setAverageRating(response.data.averageRating || 0);

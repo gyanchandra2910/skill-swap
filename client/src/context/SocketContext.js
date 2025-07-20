@@ -24,7 +24,7 @@ export const SocketProvider = ({ children }) => {
       const userData = JSON.parse(user);
       
       // Initialize socket connection
-      const newSocket = io('http://localhost:5000', {
+      const newSocket = io(window.location.origin, {
         auth: {
           token
         }

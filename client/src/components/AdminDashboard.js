@@ -44,7 +44,7 @@ const AdminDashboard = () => {
   const fetchStats = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/admin/stats', {
+      const response = await axios.get('/api/admin/stats', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -69,7 +69,7 @@ const AdminDashboard = () => {
         status: statusFilter
       });
 
-      const response = await axios.get(`http://localhost:5000/api/admin/users?${params}`, {
+      const response = await axios.get(`/api/admin/users?${params}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       
@@ -91,7 +91,7 @@ const AdminDashboard = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `http://localhost:5000/api/admin/users/${userId}/activity`,
+        `/api/admin/users/${userId}/activity`,
         {
           headers: { 'Authorization': `Bearer ${token}` }
         }
@@ -118,7 +118,7 @@ const AdminDashboard = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.put(
-        `http://localhost:5000/api/admin/users/${user._id}/ban`,
+        `/api/admin/users/${user._id}/ban`,
         { 
           ban, 
           reason: ban ? banReason : undefined 
@@ -145,7 +145,7 @@ const AdminDashboard = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.get(
-        `http://localhost:5000/api/admin/report?type=${type}`,
+        `/api/admin/report?type=${type}`,
         {
           headers: { 'Authorization': `Bearer ${token}` },
           responseType: 'blob'

@@ -16,7 +16,7 @@ const FeedbackDisplay = ({ userId, showHeader = true }) => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/feedback/${userId}?page=${currentPage}&limit=5`
+        `/api/feedback/${userId}?page=${currentPage}&limit=5`
       );
       
       if (response.data.success) {

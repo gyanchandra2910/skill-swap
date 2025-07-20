@@ -54,7 +54,7 @@ const Dashboard = () => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await axios.get('http://localhost:5000/api/swaps', {
+      const response = await axios.get('/api/swaps', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -76,7 +76,7 @@ const Dashboard = () => {
       if (!token) return;
 
       const response = await axios.put(
-        `http://localhost:5000/api/swaps/${requestId}/${action}`,
+        `/api/swaps/${requestId}/${action}`,
         {},
         {
           headers: {
@@ -123,7 +123,7 @@ const Dashboard = () => {
       if (!token) return;
 
       const response = await axios.put(
-        `http://localhost:5000/api/swaps/${requestId}/complete`,
+        `/api/swaps/${requestId}/complete`,
         { sessionSummary },
         {
           headers: {
@@ -150,7 +150,7 @@ const Dashboard = () => {
       if (!token) return;
 
       const response = await axios.put(
-        `http://localhost:5000/api/swaps/${requestId}/schedule`,
+        `/api/swaps/${requestId}/schedule`,
         scheduleData,
         {
           headers: {
