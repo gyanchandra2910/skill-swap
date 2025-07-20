@@ -6,6 +6,18 @@ const socketIo = require('socket.io');
 const path = require('path');
 require('dotenv').config();
 
+// Check for required environment variables
+const requiredEnvVars = ['MONGO_URI', 'JWT_SECRET'];
+const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+
+if (missingEnvVars.length > 0) {
+  console.error('Missing required environment variables:', missingEnvVars);
+  if (process.env.NODE_ENV === 'production') {
+    console.error('Application cannot start without these environment variables');
+    process.exit(1);
+  }
+}
+
 // Import routes
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
@@ -65,10 +77,11 @@ io.on('connection', (socket) => {
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
-    console.log('Connected to MongoDB');
+    console.log('Connected to MongoDB Atlas');
   })
   .catch((error) => {
     console.error('MongoDB connection error:', error);
+    console.error('MONGO_URI:', process.env.MONGO_URI ? 'Set' : 'Not set');
   });
 
 // Routes
@@ -77,6 +90,16 @@ app.use('/api/users', userRoutes);
 app.use('/api/swaps', swapRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/admin', adminRoutes);
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV,
+    mongoConnected: mongoose.connection.readyState === 1
+  });
+});
 
 // Serve static files from React build in production
 if (process.env.NODE_ENV === 'production') {
@@ -120,6 +143,11 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-server.listen(PORT, () => {
+server.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV}`);
+  console.log(`MongoDB URI: ${process.env.MONGO_URI ? 'Set' : 'Not set'}`);
+  console.log(`JWT Secret: ${process.env.JWT_SECRET ? 'Set' : 'Not set'}`);
+  console.log(`Email User: ${process.env.EMAIL_USER ? 'Set' : 'Not set'}`);
+  console.log(`Client URL: ${process.env.CLIENT_URL ? process.env.CLIENT_URL : 'Not set'}`);
 });

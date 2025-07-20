@@ -18,8 +18,8 @@ COPY . .
 # Build React app
 RUN npm run build
 
-# Expose port
-EXPOSE 5000
+# Expose port (Railway uses dynamic ports)
+EXPOSE $PORT
 
 # Start the application
 CMD ["npm", "start"]
