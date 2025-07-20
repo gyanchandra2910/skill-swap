@@ -2,9 +2,9 @@
   "name": "skill-swap",
   "version": "1.0.0",
   "description": "Skill swap platform",
-  "main": "server.js",
+  "main": "test-server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node test-server.js",
     "dev": "nodemon server.js",
     "client": "cd client && npm start",
     "server": "nodemon server.js",
