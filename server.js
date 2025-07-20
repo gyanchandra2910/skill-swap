@@ -186,13 +186,33 @@ app.use('/api/admin', adminRoutes);
 app.get('/api/debug/admin-check', async (req, res) => {
   try {
     const User = require('./models/User');
+    
+    // Check database connection info
+    const dbInfo = {
+      connected: mongoose.connection.readyState === 1,
+      database: mongoose.connection.db?.databaseName,
+      host: mongoose.connection.host,
+      collections: mongoose.connection.db ? await mongoose.connection.db.listCollections().toArray() : []
+    };
+    
+    // Check if any users exist
+    const totalUsers = await User.countDocuments();
+    const adminUsers = await User.find({ role: 'admin' });
+    const allUsersEmails = await User.find({}, 'email role name').limit(10);
+    
     const adminUser = await User.findOne({ email: 'thesiliconsavants@gmail.com' }).select('+password');
     
     if (!adminUser) {
       return res.json({
         success: false,
         message: 'Admin user not found',
-        exists: false
+        exists: false,
+        debug: {
+          database: dbInfo,
+          totalUsers,
+          adminUsers: adminUsers.map(u => ({ email: u.email, role: u.role, name: u.name })),
+          allUsers: allUsersEmails.map(u => ({ email: u.email, role: u.role, name: u.name }))
+        }
       });
     }
 
@@ -209,12 +229,17 @@ app.get('/api/debug/admin-check', async (req, res) => {
       hasPassword: !!adminUser.password,
       passwordValid: isPasswordValid,
       createdAt: adminUser.createdAt,
-      passwordLength: adminUser.password ? adminUser.password.length : 0
+      passwordLength: adminUser.password ? adminUser.password.length : 0,
+      debug: {
+        database: dbInfo,
+        totalUsers
+      }
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
+      stack: error.stack
     });
   }
 });
