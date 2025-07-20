@@ -113,15 +113,67 @@ io.on('connection', (socket) => {
 });
 
 // Connect to MongoDB (don't block server startup)
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log('✅ Connected to MongoDB Atlas');
-  })
-  .catch((error) => {
-    console.error('❌ MongoDB connection error:', error);
-    console.error('MONGO_URI:', process.env.MONGO_URI ? 'Set (length: ' + process.env.MONGO_URI.length + ')' : 'Not set');
-    console.log('🚀 Server will continue without MongoDB');
+const connectToMongoDB = async () => {
+  try {
+    const mongoUri = process.env.MONGO_URI;
+    
+    if (!mongoUri) {
+      console.error('❌ MONGO_URI environment variable is not set');
+      return;
+    }
+
+    console.log('🔗 Attempting MongoDB connection...');
+    console.log('📍 MongoDB URI:', mongoUri.substring(0, 30) + '...');
+    
+    // Railway-optimized connection options
+    await mongoose.connect(mongoUri, {
+      serverSelectionTimeoutMS: 30000, // 30 seconds for Railway
+      socketTimeoutMS: 45000,
+      connectTimeoutMS: 30000,
+      maxPoolSize: 10,
+      retryWrites: true,
+      w: 'majority'
+    });
+    
+    console.log('✅ Connected to MongoDB Atlas successfully!');
+    console.log('📊 Database:', mongoose.connection.db.databaseName);
+    console.log('🏠 Host:', mongoose.connection.host);
+    
+  } catch (error) {
+    console.error('❌ MongoDB connection failed:');
+    console.error('Error Name:', error.name);
+    console.error('Error Message:', error.message);
+    console.error('Error Code:', error.code);
+    
+    // Try to reconnect after delay
+    console.log('� Retrying connection in 10 seconds...');
+    setTimeout(connectToMongoDB, 10000);
+  }
+};
+
+// Start MongoDB connection
+connectToMongoDB();
+
+// MongoDB connection event handlers
+mongoose.connection.on('connected', () => {
+  console.log('🎉 Mongoose connected to MongoDB');
+});
+
+mongoose.connection.on('error', (err) => {
+  console.error('🚨 Mongoose connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+  console.log('📡 Mongoose disconnected from MongoDB');
+});
+
+// Handle app termination
+process.on('SIGINT', () => {
+  mongoose.connection.close(() => {
+    console.log('👋 Mongoose connection closed through app termination');
+    process.exit(0);
   });
+});
 
 // Routes
 app.use('/api/auth', authRoutes);
