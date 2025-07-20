@@ -182,6 +182,43 @@ app.use('/api/swaps', swapRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/admin', adminRoutes);
 
+// Admin diagnostic endpoints
+app.get('/api/debug/admin-check', async (req, res) => {
+  try {
+    const User = require('./models/User');
+    const adminUser = await User.findOne({ email: 'thesiliconsavants@gmail.com' }).select('+password');
+    
+    if (!adminUser) {
+      return res.json({
+        success: false,
+        message: 'Admin user not found',
+        exists: false
+      });
+    }
+
+    // Test password comparison
+    const testPassword = 'Gyan123@';
+    const isPasswordValid = await adminUser.comparePassword(testPassword);
+
+    res.json({
+      success: true,
+      adminExists: true,
+      email: adminUser.email,
+      role: adminUser.role,
+      name: adminUser.name,
+      hasPassword: !!adminUser.password,
+      passwordValid: isPasswordValid,
+      createdAt: adminUser.createdAt,
+      passwordLength: adminUser.password ? adminUser.password.length : 0
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+});
+
 // Serve static files from React build in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'client/build')));
