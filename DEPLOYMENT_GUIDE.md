@@ -174,6 +174,17 @@ Your Skill Swap platform is now live and ready for users!
 5. Plan for scaling as your user base grows
 
 **Your app will be available at:**
-- Railway: `https://your-app-name.up.railway.app`
+- Railway: `https://skill-swap-production.up.railway.app`
 - Heroku: `https://your-app-name.herokuapp.com`
 - Vercel: `https://your-app-name.vercel.app`
+
+---
+
+## 🌟 **Live Demo**
+
+**🚀 Live Application:** [https://skill-swap-production.up.railway.app](https://skill-swap-production.up.railway.app)
+
+**👑 Admin Access:**
+- Email: `thesiliconsavants@gmail.com`
+- Password: `Gyan123@`
+- Admin Dashboard: [https://skill-swap-production.up.railway.app/admin](https://skill-swap-production.up.railway.app/admin)
