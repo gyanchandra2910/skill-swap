@@ -38,6 +38,8 @@
 ### Step 3: Configure Environment Variables
 Add these environment variables in Railway dashboard Variables tab:
 
+**CRITICAL: Use these EXACT values:**
+
 ```env
 NODE_ENV=production
 PORT=8080
@@ -47,6 +49,12 @@ EMAIL_USER=thesiliconsavants@gmail.com
 EMAIL_PASS=mgep ewfj tqcy dpxd
 CLIENT_URL=https://skill-swap-production.up.railway.app
 ```
+
+**⚠️ Common MongoDB URI Mistakes:**
+- ❌ Wrong: `gyan995518` → ✅ Correct: `gyansuperuser`
+- ❌ Wrong: `Gyan29102003%23%40123` → ✅ Correct: `Gyan%40123`
+- ❌ Wrong: Missing `/skillswap` database name
+- ❌ Wrong: Including `&appName=skillswap-cluster`
 
 ### Step 4: Generate Domain & Deploy
 1. Click "Generate Domain" in the Networking section to get your public URL
