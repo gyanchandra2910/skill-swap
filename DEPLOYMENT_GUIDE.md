@@ -125,9 +125,15 @@ git push heroku main
 - Solution: Verify Gmail App Password is correct
 - Solution: Check if 2FA is enabled on Gmail account
 
+**Issue: Build Fails - "react-scripts: not found"**
+- Solution: Client dependencies aren't installed - this is fixed with our nixpacks.toml configuration
+- Solution: Railway should now properly install both root and client dependencies
+- Solution: Make sure both package.json files are committed to Git
+
 **Issue: Build Fails**
 - Solution: Make sure all dependencies are in package.json
 - Solution: Check if build scripts are correctly configured
+- Solution: Verify nixpacks.toml is properly configured
 
 **Issue: 404 on Refresh**
 - Solution: Ensure static file serving is configured for React Router
