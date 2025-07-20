@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const http = require('http');
 const socketIo = require('socket.io');
+const path = require('path');
 require('dotenv').config();
 
 // Import routes
@@ -16,7 +17,9 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: ["http://localhost:3000", "http://localhost:3001"],
+    origin: process.env.NODE_ENV === 'production' 
+      ? [process.env.CLIENT_URL] 
+      : ["http://localhost:3000", "http://localhost:3001"],
     methods: ["GET", "POST"]
   }
 });
@@ -75,10 +78,19 @@ app.use('/api/swaps', swapRoutes);
 app.use('/api/feedback', feedbackRoutes);
 app.use('/api/admin', adminRoutes);
 
-// Basic route
-app.get('/', (req, res) => {
-  res.json({ message: 'Skill Swap API is running!' });
-});
+// Serve static files from React build in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'client/build')));
+  
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+  });
+} else {
+  // Basic route for development
+  app.get('/', (req, res) => {
+    res.json({ message: 'Skill Swap API is running!' });
+  });
+}
 
 // Error handling middleware
 app.use((err, req, res, next) => {
