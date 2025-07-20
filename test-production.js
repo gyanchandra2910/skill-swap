@@ -13,13 +13,31 @@ async function testProductionAdmin() {
     console.log('\n1️⃣ Checking if admin user exists in production...');
     try {
       const checkResponse = await axios.get(`${baseURL}/api/debug/admin-check`);
-      console.log('✅ Admin check response:', checkResponse.data);
+      console.log('✅ Admin check response:', JSON.stringify(checkResponse.data, null, 2));
     } catch (error) {
       console.log('❌ Admin check failed:', error.response?.data || error.message);
     }
     
-    // Test 2: Test production login endpoint
-    console.log('\n2️⃣ Testing production login...');
+    // Test 2: Create admin user if it doesn't exist
+    console.log('\n2️⃣ Creating admin user in production...');
+    try {
+      const createResponse = await axios.post(`${baseURL}/api/debug/create-admin`);
+      console.log('✅ Admin creation response:', createResponse.data);
+    } catch (error) {
+      console.log('❌ Admin creation failed:', error.response?.data || error.message);
+    }
+    
+    // Test 3: Check admin user again
+    console.log('\n3️⃣ Checking admin user again...');
+    try {
+      const checkResponse = await axios.get(`${baseURL}/api/debug/admin-check`);
+      console.log('✅ Admin check response:', JSON.stringify(checkResponse.data, null, 2));
+    } catch (error) {
+      console.log('❌ Admin check failed:', error.response?.data || error.message);
+    }
+    
+    // Test 4: Test production login endpoint
+    console.log('\n4️⃣ Testing production login...');
     try {
       const loginResponse = await axios.post(`${baseURL}/api/auth/login`, {
         email: 'thesiliconsavants@gmail.com',
@@ -43,8 +61,8 @@ async function testProductionAdmin() {
       });
     }
 
-    // Test 3: Test health endpoint
-    console.log('\n3️⃣ Testing health endpoint...');
+    // Test 5: Test health endpoint
+    console.log('\n5️⃣ Testing health endpoint...');
     try {
       const healthResponse = await axios.get(`${baseURL}/health`);
       console.log('✅ Health check:', healthResponse.data);

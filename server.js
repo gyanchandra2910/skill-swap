@@ -244,6 +244,63 @@ app.get('/api/debug/admin-check', async (req, res) => {
   }
 });
 
+// Create admin user in production
+app.post('/api/debug/create-admin', async (req, res) => {
+  try {
+    const User = require('./models/User');
+    
+    const adminEmail = 'thesiliconsavants@gmail.com';
+    const adminPassword = 'Gyan123@';
+
+    // Check if admin already exists
+    const existingAdmin = await User.findOne({ email: adminEmail });
+    
+    if (existingAdmin) {
+      // Update password
+      existingAdmin.password = adminPassword;
+      await existingAdmin.save();
+      
+      res.json({
+        success: true,
+        message: 'Admin user updated',
+        action: 'updated',
+        email: existingAdmin.email,
+        role: existingAdmin.role
+      });
+    } else {
+      // Create new admin user
+      const adminUser = new User({
+        name: 'The Silicon Savants Admin',
+        email: adminEmail,
+        password: adminPassword,
+        role: 'admin',
+        location: 'India',
+        skillsOffered: ['Platform Management', 'User Support', 'System Administration'],
+        skillsWanted: ['User Feedback', 'Platform Enhancement Ideas'],
+        availability: 'available',
+        bio: 'Platform Administrator',
+        isEmailVerified: true
+      });
+
+      await adminUser.save();
+      
+      res.json({
+        success: true,
+        message: 'Admin user created',
+        action: 'created',
+        email: adminUser.email,
+        role: adminUser.role
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      stack: error.stack
+    });
+  }
+});
+
 // Serve static files from React build in production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'client/build')));
