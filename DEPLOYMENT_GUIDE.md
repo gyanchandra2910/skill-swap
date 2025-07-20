@@ -43,7 +43,7 @@ Add these environment variables in Railway dashboard Variables tab:
 ```env
 NODE_ENV=production
 PORT=8080
-MONGO_URI=mongodb+srv://gyansuperuser:Gyan%40123@skillswap-cluster.ogd5rcr.mongodb.net/skillswap?retryWrites=true&w=majority
+MONGO_URI=mongodb+srv://gyan995518:Gyan29102003%23%40123@skillswap-cluster.ogd5rcr.mongodb.net/skillswap?retryWrites=true&w=majority
 JWT_SECRET=MySuper$ecur3JWT$ecretK3yForProduction2024!
 EMAIL_USER=thesiliconsavants@gmail.com
 EMAIL_PASS=mgep ewfj tqcy dpxd
@@ -51,8 +51,8 @@ CLIENT_URL=https://skill-swap-production.up.railway.app
 ```
 
 **⚠️ Common MongoDB URI Mistakes:**
-- ❌ Wrong: `gyan995518` → ✅ Correct: `gyansuperuser`
-- ❌ Wrong: `Gyan29102003%23%40123` → ✅ Correct: `Gyan%40123`
+- ❌ Wrong: `gyansuperuser` → ✅ Correct: `gyan995518` 
+- ❌ Wrong: `Gyan%40123` → ✅ Correct: `Gyan29102003%23%40123`
 - ❌ Wrong: Missing `/skillswap` database name
 - ❌ Wrong: Including `&appName=skillswap-cluster`
 
