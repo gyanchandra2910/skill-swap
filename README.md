@@ -3,12 +3,14 @@
 > A modern skill-sharing platform that connects learners and teachers in a collaborative environment.
 
 [![Demo Video](https://img.shields.io/badge/📹_Watch-Demo_Video-red?style=for-the-badge)](https://drive.google.com/file/d/1ZrbwHnbE2PCQbaM5K3bSm3okegG80Lad/view?usp=sharing)
-[![Live Demo](https://img.shields.io/badge/🚀_Live-Demo-green?style=for-the-badge)](#)
+[![Live Demo](https://img.shields.io/badge/🚀_Live-Demo-green?style=for-the-badge)](https://skill-swap-production.up.railway.app/)
 [![MongoDB Atlas](https://img.shields.io/badge/🍃_Database-MongoDB_Atlas-green?style=for-the-badge)](#)
 
 ---
 
-## 🎥 Demo Video
+## 🎥 Demo Video & Live Platform
+
+**🚀 Try the Live Platform:** [https://skill-swap-production.up.railway.app/](https://skill-swap-production.up.railway.app/)
 
 **Watch our platform in action!** 
 👉 [**View Demo Video**](https://drive.google.com/file/d/1ZrbwHnbE2PCQbaM5K3bSm3okegG80Lad/view?usp=sharing)
@@ -86,12 +88,7 @@ The demo showcases:
    CLIENT_URL=http://localhost:3000
    ```
 
-5. **Set up admin user (optional)**
-   ```bash
-   node setup-admin.js
-   ```
-
-6. **Start the application**
+5. **Start the application**
    ```bash
    # Start both server and client concurrently
    npm run dev-full
@@ -105,6 +102,7 @@ The demo showcases:
    - 🌐 **Frontend**: http://localhost:3000
    - 🔧 **Backend API**: http://localhost:5000
    - 👑 **Admin Dashboard**: http://localhost:3000/admin
+   - 🚀 **Live Production**: https://skill-swap-production.up.railway.app/
 
 ## 📜 Available Scripts
 
@@ -192,57 +190,7 @@ The demo showcases:
 
 ---
 
-## 🚀 Quick Start
-
-### Prerequisites
-- Node.js (v14 or higher)
-- MongoDB (local or cloud instance)
-- Git
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-username/skill-swap.git
-   cd skill-swap
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   cd client && npm install && cd ..
-   ```
-
-3. **Environment setup**
-   ```bash
-   cp .env.example .env
-   ```
-   Edit `.env` with your configuration:
-   ```env
-   PORT=5000
-   MONGODB_URI=mongodb://localhost:27017/skillswap
-   JWT_SECRET=your-super-secret-jwt-key
-   NODE_ENV=development
-   EMAIL_USER=your-email@gmail.com
-   EMAIL_PASS=your-app-password
-   CLIENT_URL=http://localhost:3000
-   ```
-
-4. **Set up admin user**
-   ```bash
-   node setup-admin.js
-   ```
-
-5. **Start the application**
-   ```bash
-   npm run dev
-   ```
-
-The application will be available at:
-- Frontend: `http://localhost:3000`
-- Backend API: `http://localhost:5000`
-
-## 📱 Usage Guide
+##  Usage Guide
 
 ### 👨‍🎓 For Learners
 1. 📝 **Sign up** and complete your profile
@@ -264,38 +212,15 @@ The application will be available at:
 3. 📊 Monitor platform analytics and usage
 4. ⚙️ Configure system settings and notifications
 
-## 🛠️ Technology Stack
+##  Documentation
 
-### Frontend
-- ⚛️ **React.js** - User interface library
-- 🎨 **Material-UI** - Modern component library
-- 🔌 **Socket.io Client** - Real-time communication
-- 📡 **Axios** - HTTP client for API calls
-- 🛣️ **React Router** - Navigation and routing
+📚 **For comprehensive setup and usage information, see the sections above.**
 
-### Backend
-- 🟢 **Node.js** - Runtime environment
-- 🚀 **Express.js** - Web application framework
-- 🍃 **MongoDB** - NoSQL database
-- 🏗️ **Mongoose** - MongoDB object modeling
-- 🔌 **Socket.io** - Real-time bidirectional communication
-- 🔐 **JWT** - JSON Web Tokens for authentication
-- 🔒 **Bcrypt** - Password hashing
-- 📧 **Nodemailer** - Email sending
-
-### DevOps & Tools
-- 📁 **Git** - Version control
-- 📦 **npm** - Package management
-- 🔍 **ESLint** - Code linting
-- ✨ **Prettier** - Code formatting
-
-## 📖 Documentation
-
-📚 **For detailed documentation, see:**
-- [API Documentation](API_DOCS.md) - Complete API reference
-- [Email Setup Guide](EMAIL_SETUP_GUIDE.md) - Configure email notifications  
-- [Deployment Guide](DEPLOYMENT.md) - Production deployment instructions
-- [Real-time Features](REALTIME_NOTIFICATIONS_GUIDE.md) - Socket.io setup guide
+The README contains all essential information for:
+- Installation and setup
+- API reference
+- Usage guidelines
+- Technical details
 
 ### 🔗 Key API Endpoints
 - `POST /api/auth/login` - User authentication
@@ -307,13 +232,17 @@ The application will be available at:
 ## 🔧 Configuration
 
 ### Email Setup
-Configure email notifications by following the [Email Setup Guide](EMAIL_SETUP_GUIDE.md).
+Configure email notifications by setting up your Gmail App Password and updating the environment variables as shown in the setup section above.
 
 ### Production Deployment
-For production deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
+For production deployment:
+1. Set up your MongoDB Atlas database
+2. Configure environment variables for production
+3. Deploy to your preferred platform (Railway, Heroku, Vercel, etc.)
+4. Update CORS settings and CLIENT_URL for your domain
 
 ### Real-time Features
-Learn about setting up real-time notifications in [REALTIME_NOTIFICATIONS_GUIDE.md](REALTIME_NOTIFICATIONS_GUIDE.md).
+Real-time notifications are powered by Socket.io and work automatically once the server is running.
 
 ## 🧪 Testing
 
@@ -337,13 +266,11 @@ We welcome contributions! Please follow these steps:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-Please read our [Contributing Guidelines](CONTRIBUTING.md) for more details.
+Please read our contributing guidelines in the main sections above for more details.
 
 ## 📋 Project Status
 
 ✅ **Production Ready** - The platform is stable and ready for deployment.
-
-See [PRODUCTION-READY.md](PRODUCTION-READY.md) for deployment checklist and production considerations.
 
 ## 👥 Team
 
@@ -358,10 +285,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🆘 Support & Help
 
 ### 🔗 Getting Help
-- 📧 **Email**: support@skillswap.com
-- 🐛 **Issues**: [GitHub Issues](https://github.com/gyanchandra2910/skill-swap/issues)
+-  **Issues**: [GitHub Issues](https://github.com/gyanchandra2910/skill-swap/issues)
 - 💬 **Discussions**: [GitHub Discussions](https://github.com/gyanchandra2910/skill-swap/discussions)
 - 📹 **Demo Video**: [Watch Here](https://drive.google.com/file/d/1ZrbwHnbE2PCQbaM5K3bSm3okegG80Lad/view?usp=sharing)
+- 🚀 **Live Demo**: [Try it Now](https://skill-swap-production.up.railway.app/)
 
 ### ❓ Frequently Asked Questions
 
